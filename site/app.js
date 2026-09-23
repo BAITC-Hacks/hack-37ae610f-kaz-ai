@@ -146,6 +146,14 @@ function renderSummary(summary) {
   $('statMissing').textContent = fmt.format(summary.needs_stock);
 }
 
+function renderAnalytics(rows) {
+  if (!$('analytics')) return;
+  $('analyticsRisk').textContent = fmt.format(rows.filter((row) => row.status === 'ready' && (row.risk_before_delivery || 0) > 0).length);
+  $('analyticsOutliers').textContent = fmt.format(rows.filter((row) => (row.excluded_outliers || 0) > 0).length);
+  $('analyticsStockout').textContent = fmt.format(rows.filter((row) => (row.imputed_stockouts || 0) > 0).length);
+  $('analyticsStock').textContent = `${fmt.format(rows.filter((row) => row.free_stock != null).length)}/${fmt.format(rows.length)}`;
+}
+
 function renderSuppliers(suppliers) {
   if (!$('supplierCards')) return;
   $('supplierCards').innerHTML = suppliers.map((item) => {
@@ -191,7 +199,7 @@ function renderRows() {
         <td data-label="${esc(t('available'))}">${row.free_stock == null && row.status === 'needs_stock' ? `<div class="stock-entry"><input class="stock-input" type="number" min="0" step="1" placeholder="${esc(t('stockPlaceholder'))}" aria-label="${esc(t('stockLabel', { code: row.code }))}"><button class="save-stock" type="button">${esc(t('save'))}</button></div>` : row.free_stock == null ? '—' : fmt.format(row.free_stock)}</td>
         <td data-label="${esc(t('inbound'))}">${row.inbound == null ? '—' : fmt.format(row.inbound)}</td>
         <td data-label="${esc(t('order'))}">${ready ? `<input class="qty-input" type="number" min="${row.moq}" step="${row.moq}" value="${quantity}" aria-label="${esc(t('quantityLabel', { code: row.code }))}">` : '—'}</td>
-        <td data-label="${esc(t('urgency'))}"><span class="badge ${urgency[0]}">${urgency[1]}</span></td>
+        <td data-label="${esc(t('urgency'))}"><span class="badge ${urgency[0]}">${urgency[1]}</span>${(row.risk_before_delivery || 0) > 0 ? `<span class="risk-gap">${esc(t('riskGap', { value: fmt.format(row.risk_before_delivery) }))}</span>` : ''}</td>
       </tr>`;
     }).join('');
   }
@@ -229,9 +237,23 @@ function clearAndLoad() {
 }
 
 async function loadOverview() {
-  const data = await request(`/api/recommendations?days=${preferences.coverageDays}&orders=0&limit=1`);
+  const analyticsEnabled = page === 'home' && state.meta.mode === 'synthetic';
+  const params = `days=${preferences.coverageDays}&orders=0&limit=${analyticsEnabled ? 250 : 1}`;
+  const data = await request(`/api/recommendations?${params}`);
   renderSummary(data.summary);
   renderSuppliers(data.suppliers);
+  if ($('analytics')) {
+    $('analytics').hidden = !analyticsEnabled;
+    if (analyticsEnabled) {
+      const rows = [...data.rows];
+      while (rows.length < data.total) {
+        const next = await request(`/api/recommendations?${params}&offset=${rows.length}`);
+        if (!next.rows.length) break;
+        rows.push(...next.rows);
+      }
+      renderAnalytics(rows);
+    }
+  }
 }
 
 async function init() {
