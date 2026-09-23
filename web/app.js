@@ -2,6 +2,13 @@ const $ = (id) => document.getElementById(id);
 const page = document.body.dataset.page;
 const state = { meta: null, rows: [], summary: null, suppliers: [], total: 0, offset: 0, limit: 100, selected: new Map(), days: 30, approvedCount: 0 };
 const languageKey = 'kaz-ai-language';
+const preferencesKey = 'kaz-ai-preferences';
+const savedPreferences = (() => { try { return JSON.parse(localStorage.getItem(preferencesKey)) || {}; } catch { return {}; } })();
+const preferences = {
+  coverageDays: [14, 30, 45, 60].includes(savedPreferences.coverageDays) ? savedPreferences.coverageDays : 30,
+  supplier: typeof savedPreferences.supplier === 'string' ? savedPreferences.supplier : '',
+  ordersOnly: typeof savedPreferences.ordersOnly === 'boolean' ? savedPreferences.ordersOnly : true,
+};
 let language = ['kk', 'ru'].includes(localStorage.getItem(languageKey)) ? localStorage.getItem(languageKey) : 'ru';
 const locale = () => ({ kk: 'kk-KZ', ru: 'ru-RU' })[language];
 let fmt = new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 });
@@ -65,11 +72,28 @@ function applyLanguage() {
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-aria-label]').forEach((node) => { node.setAttribute('aria-label', t(node.dataset.i18nAriaLabel)); });
-  $('days')?.querySelectorAll('option').forEach((option) => { option.textContent = `${option.value} ${language === 'kk' ? 'күн' : 'дней'}`; });
+  ['days', 'defaultDays'].forEach((id) => $(id)?.querySelectorAll('option').forEach((option) => { option.textContent = `${option.value} ${language === 'kk' ? 'күн' : 'дней'}`; }));
   document.querySelectorAll('[data-lang]').forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.lang === language));
     button.classList.toggle('active', button.dataset.lang === language);
   });
+}
+
+function renderSettings() {
+  if (page !== 'settings' || !state.meta) return;
+  $('defaultDays').value = String(preferences.coverageDays);
+  $('defaultOrdersOnly').checked = preferences.ordersOnly;
+  $('defaultSupplier').innerHTML = `<option value="">${esc(t('allSuppliers'))}</option>` +
+    state.meta.suppliers.map((name) => `<option value="${esc(name)}">${esc(displaySupplier(name))}</option>`).join('');
+  $('defaultSupplier').value = state.meta.suppliers.includes(preferences.supplier) ? preferences.supplier : '';
+}
+
+function savePreferences() {
+  preferences.coverageDays = Number($('defaultDays').value);
+  preferences.supplier = $('defaultSupplier').value;
+  preferences.ordersOnly = $('defaultOrdersOnly').checked;
+  localStorage.setItem(preferencesKey, JSON.stringify(preferences));
+  notify(t('preferencesSaved'));
 }
 
 function notify(message, error = false) {
@@ -162,12 +186,12 @@ function renderRows() {
         <td><input class="row-check" type="checkbox" ${selected ? 'checked' : ''} ${ready ? '' : 'disabled'} aria-label="${esc(t('selectItem', { code: row.code }))}"></td>
         <td><div class="item-name">${esc(displayProduct(row))}<span class="item-code">${esc(row.code)} · ${esc(t('categoryRow', { category: displayCategory(row.category || '—') }))}</span></div>
           <div class="reason">${esc(localizedReason(row))}${(row.flags || []).map((flag) => `<span class="flag">${esc(displayFlag(flag))}</span>`).join('')}</div></td>
-        <td><span class="supplier-tag">${esc(displaySupplier(row.supplier))}</span></td>
-        <td>${row.forecast == null ? '—' : fmt.format(row.forecast)}</td>
-        <td>${row.free_stock == null && row.status === 'needs_stock' ? `<div class="stock-entry"><input class="stock-input" type="number" min="0" step="1" placeholder="${esc(t('stockPlaceholder'))}" aria-label="${esc(t('stockLabel', { code: row.code }))}"><button class="save-stock" type="button">${esc(t('save'))}</button></div>` : row.free_stock == null ? '—' : fmt.format(row.free_stock)}</td>
-        <td>${row.inbound == null ? '—' : fmt.format(row.inbound)}</td>
-        <td>${ready ? `<input class="qty-input" type="number" min="${row.moq}" step="${row.moq}" value="${quantity}" aria-label="${esc(t('quantityLabel', { code: row.code }))}">` : '—'}</td>
-        <td><span class="badge ${urgency[0]}">${urgency[1]}</span></td>
+        <td data-label="${esc(t('supplier'))}"><span class="supplier-tag">${esc(displaySupplier(row.supplier))}</span></td>
+        <td data-label="${esc(t('demand'))}">${row.forecast == null ? '—' : fmt.format(row.forecast)}</td>
+        <td data-label="${esc(t('available'))}">${row.free_stock == null && row.status === 'needs_stock' ? `<div class="stock-entry"><input class="stock-input" type="number" min="0" step="1" placeholder="${esc(t('stockPlaceholder'))}" aria-label="${esc(t('stockLabel', { code: row.code }))}"><button class="save-stock" type="button">${esc(t('save'))}</button></div>` : row.free_stock == null ? '—' : fmt.format(row.free_stock)}</td>
+        <td data-label="${esc(t('inbound'))}">${row.inbound == null ? '—' : fmt.format(row.inbound)}</td>
+        <td data-label="${esc(t('order'))}">${ready ? `<input class="qty-input" type="number" min="${row.moq}" step="${row.moq}" value="${quantity}" aria-label="${esc(t('quantityLabel', { code: row.code }))}">` : '—'}</td>
+        <td data-label="${esc(t('urgency'))}"><span class="badge ${urgency[0]}">${urgency[1]}</span></td>
       </tr>`;
     }).join('');
   }
@@ -205,19 +229,22 @@ function clearAndLoad() {
 }
 
 async function loadOverview() {
-  const data = await request('/api/recommendations?days=30&orders=0&limit=1');
+  const data = await request(`/api/recommendations?days=${preferences.coverageDays}&orders=0&limit=1`);
   renderSummary(data.summary);
   renderSuppliers(data.suppliers);
 }
 
 async function init() {
   applyLanguage();
-  if (page === 'settings') return;
   state.meta = await request('/api/meta');
+  if (page === 'settings') { renderSettings(); return; }
   state.approvedCount = state.meta.approved_count;
   renderMeta();
   if (page === 'recommendations') {
-    if (state.meta.mode === 'partner') $('ordersOnly').checked = false;
+    state.days = preferences.coverageDays;
+    $('days').value = String(state.days);
+    $('ordersOnly').checked = state.meta.mode === 'partner' ? false : preferences.ordersOnly;
+    if (state.meta.suppliers.includes(preferences.supplier)) $('supplier').value = preferences.supplier;
     const supplier = new URLSearchParams(location.search).get('supplier');
     if (supplier && state.meta.suppliers.includes(supplier)) $('supplier').value = supplier;
     await loadRows();
@@ -241,7 +268,10 @@ if (page === 'settings') document.querySelectorAll('[data-lang]').forEach((butto
   language = button.dataset.lang;
   localStorage.setItem(languageKey, language);
   applyLanguage();
+  renderSettings();
 }));
+
+if (page === 'settings') ['defaultDays', 'defaultSupplier', 'defaultOrdersOnly'].forEach((id) => $(id).addEventListener('change', savePreferences));
 
 if (page === 'recommendations') {
 $('supplier').addEventListener('change', clearAndLoad);
