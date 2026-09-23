@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Демонстрационный сервис расчёта заказов поставщикам для ТОО Электрокомплект." />
+    <title>Supply Control · Электрокомплект</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2311213c'/%3E%3Cpath d='M8 9h16v5H13v3h9v5h-9v3H8z' fill='%234d8dff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Навигация">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">EC</span>
+          <span><strong>Supply Control</strong><small>Электрокомплект</small></span>
+        </div>
+
+        <nav class="nav-list">
+          <a class="nav-item active" href="#recommendations"><span>01</span> Рекомендации</a>
+          <a class="nav-item" href="#data-quality"><span>02</span> Качество данных</a>
+          <a class="nav-item" href="#scenario"><span>03</span> Сценарий</a>
+        </nav>
+
+        <section class="sidebar-status" aria-labelledby="source-title">
+          <p class="eyebrow" id="source-title">Источник</p>
+          <div class="source-row"><span class="status-dot"></span><strong>Systeme Electric</strong></div>
+          <p>Срез на 22.09.2026</p>
+          <p>497 товарных позиций</p>
+        </section>
+
+        <div class="sidebar-foot">
+          <span class="demo-badge">ДЕМО</span>
+          <p>Заказ не отправляется поставщику без подтверждения.</p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Пополнение склада</p>
+            <h1>Рекомендации к заказу</h1>
+          </div>
+          <div class="topbar-actions">
+            <label class="button secondary file-button">
+              <input id="file-input" type="file" accept="application/json,.json" />
+              Загрузить расчёт
+            </label>
+            <button class="button secondary" id="export-button" type="button" disabled>Экспорт подтверждённых</button>
+          </div>
+        </header>
+
+        <section class="warning-banner" aria-label="Статус сценария">
+          <strong>Демонстрационный сценарий</strong>
+          <span>Lead time, страховой запас и категории требуют подтверждения партнёра.</span>
+          <button type="button" id="scenario-link">Показать допущения</button>
+        </section>
+
+        <section class="metrics-grid" aria-label="Ключевые показатели">
+          <article class="metric-card emphasis">
+            <p>Оценочная стоимость</p>
+            <strong id="metric-value">—</strong>
+            <span id="metric-lines">— строк к заказу</span>
+          </article>
+          <article class="metric-card">
+            <p>Критические позиции</p>
+            <strong id="metric-critical">—</strong>
+            <span>риск дефицита до поставки</span>
+          </article>
+          <article class="metric-card">
+            <p>Ручная проверка</p>
+            <strong id="metric-review">—</strong>
+            <span>автоматическая отправка запрещена</span>
+          </article>
+          <article class="metric-card danger">
+            <p>Заблокировано</p>
+            <strong id="metric-blocked">—</strong>
+            <span>нет MOQ или обязательного параметра</span>
+          </article>
+        </section>
+
+        <section class="quality-panel" id="data-quality" aria-labelledby="quality-title">
+          <div>
+            <p class="eyebrow">Контроль входных данных</p>
+            <h2 id="quality-title">Результат нельзя принимать вслепую</h2>
+          </div>
+          <div class="quality-grid">
+            <div class="quality-item"><span>Stockout-периоды</span><strong class="bad">0%</strong><small>не переданы</small></div>
+            <div class="quality-item"><span>MOQ</span><strong id="quality-moq">—</strong><small>покрытие справочника</small></div>
+            <div class="quality-item"><span>Ограничен рост</span><strong id="quality-growth">—</strong><small>защита от выбросов</small></div>
+            <div class="quality-item"><span>Ограничена сезонность</span><strong id="quality-season">—</strong><small>защита от выбросов</small></div>
+          </div>
+        </section>
+
+        <section class="workspace-card" id="recommendations" aria-labelledby="table-title">
+          <div class="workspace-heading">
+            <div>
+              <p class="eyebrow">Рабочая очередь</p>
+              <h2 id="table-title">Позиции для решения менеджера</h2>
+            </div>
+            <div class="selection-summary" aria-live="polite">
+              <span id="selected-count">0 выбрано</span>
+              <button class="button primary" id="review-button" type="button" disabled>Проверить и подтвердить</button>
+            </div>
+          </div>
+
+          <div class="toolbar" role="search">
+            <label class="search-field">
+              <span class="sr-only">Поиск</span>
+              <input id="search-input" type="search" placeholder="SKU или наименование" autocomplete="off" />
+            </label>
+            <label>
+              <span class="sr-only">Срочность</span>
+              <select id="urgency-filter">
+                <option value="all">Любая срочность</option>
+                <option value="critical">Критическая</option>
+                <option value="high">Высокая</option>
+                <option value="normal">Обычная</option>
+                <option value="none">Заказ не требуется</option>
+              </select>
+            </label>
+            <label>
+              <span class="sr-only">Статус</span>
+              <select id="status-filter">
+                <option value="all">Любой статус</option>
+                <option value="review_required">Требует проверки</option>
+                <option value="blocked">Заблокировано</option>
+              </select>
+            </label>
+            <label>
+              <span class="sr-only">Сортировка</span>
+              <select id="sort-select">
+                <option value="priority">По риску</option>
+                <option value="value">По стоимости</option>
+                <option value="quantity">По количеству</option>
+                <option value="sku">По SKU</option>
+              </select>
+            </label>
+            <label class="check-filter"><input id="positive-filter" type="checkbox" checked /> Только к заказу</label>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="checkbox-cell"><span class="sr-only">Выбор</span></th>
+                  <th>Риск</th>
+                  <th>SKU / товар</th>
+                  <th>Кат.</th>
+                  <th class="number">Прогноз</th>
+                  <th class="number">Свободно</th>
+                  <th class="number">В пути</th>
+                  <th class="number">К заказу</th>
+                  <th class="number">Стоимость</th>
+                  <th><span class="sr-only">Детали</span></th>
+                </tr>
+              </thead>
+              <tbody id="recommendations-body"></tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <span id="table-count">—</span>
+            <div class="pagination">
+              <button id="prev-page" type="button" aria-label="Предыдущая страница">←</button>
+              <span id="page-indicator">—</span>
+              <button id="next-page" type="button" aria-label="Следующая страница">→</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="scenario-panel" id="scenario" aria-labelledby="scenario-title">
+          <div>
+            <p class="eyebrow">Управляемые параметры</p>
+            <h2 id="scenario-title">Демо-допущения</h2>
+          </div>
+          <dl class="assumption-list" id="assumption-list"></dl>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="detail-dialog" id="detail-dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">Обоснование</p><h2 id="detail-title">—</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="detail-dialog" aria-label="Закрыть">×</button>
+      </div>
+      <div id="detail-content"></div>
+    </dialog>
+
+    <dialog class="approval-dialog" id="approval-dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">Контрольное действие</p><h2>Подтвердить выбранные позиции?</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="approval-dialog" aria-label="Закрыть">×</button>
+      </div>
+      <p id="approval-copy"></p>
+      <div class="approval-warning">Подтверждение сохранится только в этом браузере. Поставщику ничего не отправляется.</div>
+      <div class="dialog-actions">
+        <button class="button secondary" type="button" data-close-dialog="approval-dialog">Отмена</button>
+        <button class="button primary" id="confirm-button" type="button">Подтвердить</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
