@@ -20,7 +20,8 @@
           <a class="nav-item active" href="#recommendations"><span>01</span> Рекомендации</a>
           <a class="nav-item" href="#data-quality"><span>02</span> Качество данных</a>
           <a class="nav-item" href="#partner-questions"><span>03</span> Вопросы партнёру</a>
-          <a class="nav-item" href="#scenario"><span>04</span> Сценарий</a>
+          <a class="nav-item" href="#scenario-comparison"><span>04</span> Сценарии</a>
+          <a class="nav-item" href="#scenario"><span>05</span> Допущения</a>
         </nav>
 
         <section class="sidebar-status" aria-labelledby="source-title">
@@ -128,6 +129,36 @@
               <tbody id="questions-body"></tbody>
             </table>
           </div>
+        </section>
+
+        <section class="scenario-comparison-panel" id="scenario-comparison" aria-labelledby="scenario-comparison-title" hidden>
+          <div class="scenario-comparison-heading">
+            <div>
+              <p class="eyebrow">Чувствительность решения</p>
+              <h2 id="scenario-comparison-title">Что меняется при разной осторожности</h2>
+              <p>Сравниваем количество, стоимость, риск дефицита и запас сверх спроса на горизонт.</p>
+            </div>
+            <span class="scenario-badge">Не условия партнёра</span>
+          </div>
+          <div class="table-scroll">
+            <table class="scenario-table">
+              <thead>
+                <tr>
+                  <th>Сценарий</th>
+                  <th class="number">Lead time</th>
+                  <th class="number">Строк</th>
+                  <th class="number">Кол-во</th>
+                  <th class="number">Разница</th>
+                  <th class="number">Стоимость</th>
+                  <th class="number">Риск дефицита</th>
+                  <th class="number">Дефицит</th>
+                  <th class="number">Запас сверх спроса</th>
+                </tr>
+              </thead>
+              <tbody id="scenario-comparison-body"></tbody>
+            </table>
+          </div>
+          <p class="scenario-method" id="scenario-comparison-note"></p>
         </section>
 
         <section class="proof-panel" id="requirements-proof" aria-labelledby="proof-title" hidden>

@@ -59,6 +59,10 @@ def public_partner_payload(payload: dict[str, Any]) -> dict[str, Any]:
     for row in public["recommendations"]:
         row["unit_cost"] = None
         row["order_value_demo"] = None
+    comparison = public.get("scenario_comparison") or {}
+    for variant in comparison.get("variants", []):
+        variant["total_order_value_demo"] = None
+        variant["delta_order_value_from_base"] = None
     public["assumptions"]["notes"] = [
         "Опубликованы только производные рекомендации, а не исходные таблицы партнёра.",
         "Клиентские идентификаторы, сырая история продаж и цены исключены.",

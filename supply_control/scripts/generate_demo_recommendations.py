@@ -23,6 +23,7 @@ from replenishment.partner_answers import (  # noqa: E402
 )
 from replenishment.reorder import calculate_recommendation  # noqa: E402
 from replenishment.scenario import DemoScenario  # noqa: E402
+from replenishment.scenario_comparison import compare_scenarios  # noqa: E402
 
 
 CONSOLIDATED = ROOT / "data/extracted/systeme/Systeme electric/Товар в пути_SystemElectric на 22.09.2026.xlsx"
@@ -56,6 +57,7 @@ def main() -> None:
     core_confirmed = bool(confirmation.get("core_parameters_confirmed"))
     records = load_systeme_snapshot(CONSOLIDATED, MOQ, as_of=AS_OF)
     rows: list[dict[str, Any]] = []
+    forecasts: dict[str, Any] = {}
     status_counts: Counter[str] = Counter()
     urgency_counts: Counter[str] = Counter()
     category_counts: Counter[str] = Counter()
@@ -96,6 +98,7 @@ def main() -> None:
                 dict.fromkeys(forecast.review_reasons + tuple(extra_reasons))
             ),
         )
+        forecasts[record.sku] = forecast
         policy = scenario.policy_for(record)
         recommendation = calculate_recommendation(
             policy,
@@ -197,9 +200,16 @@ def main() -> None:
         "minimum_total_order_kzt": minimum_total,
         "below_minimum_total_order": below_minimum,
     }
+    scenario_comparison = compare_scenarios(
+        records,
+        forecasts,
+        scenario,
+        as_of=AS_OF,
+    )
     payload = {
         "summary": summary,
         "assumptions": asdict(scenario),
+        "scenario_comparison": scenario_comparison,
         "partner_questions": question_rows,
         "recommendations": rows,
     }
@@ -229,11 +239,35 @@ def main() -> None:
         "",
         "Все незаблокированные строки имеют статус `review_required`: отсутствуют подтверждённые stockout-данные и применены демо-допущения.",
         "",
+        "## Сравнение сценариев",
+        "",
+        "| Сценарий | Lead time | Строк к заказу | Кол-во | Стоимость, ₸ | Риск дефицита, SKU | Дефицит, шт. | Запас сверх спроса, шт. |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for variant in scenario_comparison["variants"]:
+        lines.append(
+            "| {label} | {lead:g} | {lines:g} | {units:g} | {value} | {risk:g} | {shortage:g} | {buffer:g} |".format(
+                label=variant["label"],
+                lead=variant["lead_time_days"],
+                lines=variant["positive_order_lines"],
+                units=variant["total_order_units_demo"],
+                value=_money(variant["total_order_value_demo"]),
+                risk=variant["estimated_shortage_lines"],
+                shortage=variant["estimated_shortage_units"],
+                buffer=variant["estimated_buffer_units"],
+            )
+        )
+    lines.extend(
+        [
+        "",
+        f"> {scenario_comparison['warning']}",
+        "",
         "## Топ-30 рекомендаций",
         "",
         "| Срочность | SKU | Категория | Наименование | Кол-во | Кратность | Стоимость, ₸ |",
         "|---|---|---:|---|---:|---:|---:|",
-    ]
+        ]
+    )
     for row in positive[:30]:
         recommendation = row["recommendation"]
         safe_name = row["name"].replace("|", "/")

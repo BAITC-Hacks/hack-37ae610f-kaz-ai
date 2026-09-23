@@ -40,6 +40,7 @@ const reasonLabels = {
 const formatNumber = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
 const formatDecimal = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 });
 const formatMoney = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0, style: "currency", currency: "KZT" });
+const formatSignedNumber = (value) => `${Number(value) > 0 ? "+" : ""}${formatNumber.format(Number(value) || 0)}`;
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
 
 function cacheElements() {
@@ -53,6 +54,7 @@ function cacheElements() {
     "approval-copy", "confirm-button", "file-input", "toast", "scenario-link", "dataset-mode", "source-name",
     "source-date", "source-count", "data-badge", "warning-title", "warning-copy",
     "partner-questions", "question-count", "question-confirmed", "questions-body", "questionnaire-download",
+    "scenario-comparison", "scenario-comparison-body", "scenario-comparison-note",
   ].forEach((id) => { elements[id] = document.getElementById(id); });
 }
 
@@ -81,6 +83,7 @@ function setPayload(payload, mode = state.mode) {
   renderSummary();
   renderQuality();
   renderPartnerQuestions();
+  renderScenarioComparison();
   renderProofs();
   renderAssumptions();
   applyFilters();
@@ -173,6 +176,29 @@ function renderPartnerQuestions() {
       <td>${escapeHtml(row.project_impact || "—")}</td>
     </tr>`;
   }).join("");
+}
+
+function renderScenarioComparison() {
+  const comparison = state.payload.scenario_comparison;
+  const variants = comparison?.variants || [];
+  elements["scenario-comparison"].hidden = variants.length === 0;
+  if (!variants.length) return;
+  elements["scenario-comparison-body"].innerHTML = variants.map((row) => {
+    const hasValue = row.total_order_value_demo != null && Number.isFinite(Number(row.total_order_value_demo));
+    const value = hasValue ? formatMoney.format(row.total_order_value_demo) : "Скрыто";
+    return `<tr class="${row.key === comparison.baseline_key ? "scenario-base-row" : ""}">
+      <td class="scenario-name"><strong>${escapeHtml(row.label)}</strong><span>${escapeHtml(row.description)}</span></td>
+      <td class="number">${formatNumber.format(row.lead_time_days || 0)} дн.</td>
+      <td class="number">${formatNumber.format(row.positive_order_lines || 0)}</td>
+      <td class="number"><strong>${formatNumber.format(row.total_order_units_demo || 0)}</strong></td>
+      <td class="number scenario-delta">${formatSignedNumber(row.delta_order_units_from_base)}</td>
+      <td class="number">${escapeHtml(value)}</td>
+      <td class="number">${formatNumber.format(row.estimated_shortage_lines || 0)} SKU</td>
+      <td class="number">${formatNumber.format(row.estimated_shortage_units || 0)} шт.</td>
+      <td class="number">${formatNumber.format(row.estimated_buffer_units || 0)} шт.</td>
+    </tr>`;
+  }).join("");
+  elements["scenario-comparison-note"].textContent = `${comparison.warning || ""} ${comparison.method || ""}`.trim();
 }
 
 function renderAssumptions() {

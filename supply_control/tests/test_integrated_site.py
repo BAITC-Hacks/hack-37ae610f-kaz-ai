@@ -47,6 +47,16 @@ class IntegratedSiteTests(unittest.TestCase):
                 "total_order_value_demo": 999.0,
             },
             "assumptions": {"notes": ["internal"]},
+            "scenario_comparison": {
+                "variants": [
+                    {
+                        "key": "base",
+                        "total_order_value_demo": 999.0,
+                        "delta_order_value_from_base": 0.0,
+                        "total_order_units_demo": 3,
+                    }
+                ]
+            },
             "proofs": [],
             "recommendations": [
                 {
@@ -70,6 +80,10 @@ class IntegratedSiteTests(unittest.TestCase):
         self.assertIsNone(row["unit_cost"])
         self.assertIsNone(row["order_value_demo"])
         self.assertIsNone(public["summary"]["total_order_value_demo"])
+        variant = public["scenario_comparison"]["variants"][0]
+        self.assertIsNone(variant["total_order_value_demo"])
+        self.assertIsNone(variant["delta_order_value_from_base"])
+        self.assertEqual(variant["total_order_units_demo"], 3)
         rendered = json.dumps(public, ensure_ascii=False)
         self.assertNotIn("CUSTOMER-1", rendered)
         self.assertNotIn("customer_id", rendered)
