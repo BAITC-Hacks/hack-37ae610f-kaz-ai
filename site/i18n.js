@@ -30,7 +30,7 @@ window.KazI18n = {
     urgencyHigh: 'Высокая', urgencyNormal: 'Обычная', urgencyMissing: 'Нужны данные', pagination: '{first}–{last} из {total}',
     selectionCount: '{count} {word} {verb}', selectedOne: 'выбрана', selectedMany: 'выбрано', positionOne: 'позиция', positionFew: 'позиции', positionMany: 'позиций',
     stockPrompt: 'Введите свободный остаток на дату среза', stockSaved: 'Остаток сохранён. Рекомендация пересчитана.',
-    approvedNotice: '{count} {word} утверждено. CSV доступен для выгрузки.', requestError: 'Ошибка {status}', insufficientHistory: 'Недостаточно истории продаж', partnerBlockedReason: 'Предварительный прогноз: {forecast}. Заказ заблокирован до подтверждения срока поставки, страхового запаса и кратности.',
+    approvedNotice: 'Утверждено позиций: {count}. CSV доступен для выгрузки.', requestError: 'Ошибка {status}', insufficientHistory: 'Недостаточно истории продаж', partnerBlockedReason: 'Предварительный прогноз: {forecast}. Заказ заблокирован до подтверждения срока поставки, страхового запаса и кратности.',
     reasonKnown: 'Спрос на {days} дн.: {forecast}; свободный остаток: {stock}; ',
     reasonUnknown: 'Спрос на {days} дн.: {forecast}; текущий остаток не предоставлен; ',
     reasonSettings: 'покрытие: {coverage} дн.; срок поставки: {lead} дн.; страховой запас: {safety} дн. (+{extra} к спросу); в пути до {date}: {inbound}; рост: {growth}; кратность: {moq}.',

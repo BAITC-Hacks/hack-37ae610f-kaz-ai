@@ -1,11 +1,14 @@
 import tempfile
 import unittest
 from datetime import date
+from http.client import HTTPConnection
+from http.server import ThreadingHTTPServer
 from pathlib import Path
+from threading import Thread
 
 from kaz_ai.demo import demo_products
 from kaz_ai.engine import Arrival, ForecastSettings, Product, Sale, recommend, recommend_all
-from kaz_ai.server import AppState
+from kaz_ai.server import AppState, Handler
 
 
 AS_OF = date(2026, 9, 22)
@@ -159,6 +162,41 @@ class ReplenishmentAcceptanceTests(unittest.TestCase):
             self.assertEqual(len(AppState([product()], report, storage).approved), 1)
             app.set_stock(p.supplier, p.code, 20)
             self.assertEqual(len(app.approved), 0)
+
+    def test_approval_rejects_fractional_quantity_and_invalid_items(self):
+        p = product(moq=1)
+        report = {"as_of": AS_OF.isoformat(), "archives": ["test"], "products": 1}
+        with tempfile.TemporaryDirectory() as temp:
+            app = AppState([p], report, Path(temp) / "orders.json")
+            for quantity in (1.5, True, "1.5"):
+                with self.subTest(quantity=quantity), self.assertRaisesRegex(ValueError, "Некорректное количество"):
+                    app.approve([{"supplier": p.supplier, "code": p.code, "quantity": quantity}], 30)
+            with self.assertRaisesRegex(ValueError, "Некорректная позиция"):
+                app.approve(["SKU-1"], 30)
+            with self.assertRaisesRegex(ValueError, "Выберите от 1 до 500"):
+                app.approve({"code": p.code}, 30)
+            self.assertEqual(app.approved, {})
+
+    def test_api_rejects_non_object_json_without_crashing(self):
+        p = product()
+        report = {"as_of": AS_OF.isoformat(), "archives": ["test"], "products": 1}
+        with tempfile.TemporaryDirectory() as temp:
+            state = AppState([p], report, Path(temp) / "orders.json")
+            handler = type("TestHandler", (Handler,), {"state": state})
+            server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+            thread = Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                connection = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+                connection.request("POST", "/api/approve", "[]", {"Content-Type": "application/json"})
+                response = connection.getresponse()
+                self.assertEqual(response.status, 400)
+                self.assertIn("Ожидается объект JSON", response.read().decode())
+                connection.close()
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=5)
 
     def test_supplier_exports_and_adjustments_have_audit_history(self):
         a = product(moq=10)
