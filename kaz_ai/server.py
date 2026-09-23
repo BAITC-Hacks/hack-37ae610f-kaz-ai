@@ -32,6 +32,7 @@ class AppState:
         self.as_of = date.fromisoformat(report["as_of"])
         self.storage = storage
         self.stock_storage = storage.with_name(storage.stem + "-stocks.json")
+        self.audit_storage = storage.with_name(storage.stem + "-audit.jsonl")
         self.lock = Lock()
         self.cache: dict[int, list[dict]] = {}
         self.approved: dict[str, dict] = {}
@@ -45,18 +46,31 @@ class AppState:
                     product.free_stock = float(value)
                     product.stock_as_of = self.as_of
                     product.warnings.append("Остаток внесён вручную")
-        if storage.exists():
+        if storage.exists() and report.get("mode") != "partner":
             saved = json.loads(storage.read_text(encoding="utf-8"))
             self.approved = {str(k): v for k, v in saved.items() if isinstance(v, dict)}
 
     def rows(self, days: int) -> list[dict]:
         if days not in self.cache:
-            self.cache[days] = recommend_all(self.products, ForecastSettings(self.as_of, days))
+            rows = recommend_all(self.products, ForecastSettings(self.as_of, days))
+            if self.report.get("mode") == "partner":
+                # Archive exports do not confirm lead times or safety-stock policy.
+                # Show demand forecasts, but block unverified purchase quantities.
+                for row in rows:
+                    row["quantity"] = None
+                    if row["status"] == "ready":
+                        row["status"] = "review_required"
+                    row["flags"] = list(dict.fromkeys([*row["flags"], "Параметры заказа не подтверждены"]))
+                    row["reason"] = "Предварительный прогноз. Заказ заблокирован до подтверждения срока поставки, страхового запаса и кратности заказа. " + row["reason"]
+            self.cache[days] = rows
         return self.cache[days]
 
     def approve(self, items: list[dict], days: int) -> int:
+        if self.report.get("mode") == "partner":
+            raise ValueError("Заказ по данным партнёра заблокирован до подтверждения параметров закупки")
         available = {(r["supplier"], r["code"]): r for r in self.rows(days)}
         prepared: list[tuple[str, dict]] = []
+        seen: set[str] = set()
         if not items or len(items) > 500:
             raise ValueError("Выберите от 1 до 500 позиций")
         for item in items:
@@ -71,6 +85,9 @@ class AppState:
             if amount <= 0 or amount > 10_000_000 or amount % row["moq"] != 0:
                 raise ValueError(f"Количество {code} должно быть положительным и кратным {row['moq']}")
             key = f"{supplier}\u241f{code}"
+            if key in seen:
+                raise ValueError(f"Позиция {code} выбрана повторно")
+            seen.add(key)
             prepared.append((key, {
                 "supplier": supplier, "code": code, "name": row["name"], "quantity": amount,
                 "recommended_quantity": row["quantity"], "reason": row["reason"],
@@ -78,13 +95,47 @@ class AppState:
                 "approved_at": datetime.now(timezone.utc).isoformat(),
             }))
         with self.lock:
+            events = []
             for key, item in prepared:
+                previous = self.approved.get(key)
                 self.approved[key] = item
+                events.append({"event": "approval", "at": item["approved_at"],
+                               "supplier": item["supplier"], "code": item["code"],
+                               "recommended_quantity": item["recommended_quantity"],
+                               "approved_quantity": item["quantity"],
+                               "previous_quantity": previous["quantity"] if previous else None,
+                               "coverage_days": days})
             self.storage.parent.mkdir(parents=True, exist_ok=True)
             temp = self.storage.with_suffix(".tmp")
             temp.write_text(json.dumps(self.approved, ensure_ascii=False, indent=2), encoding="utf-8")
             temp.replace(self.storage)
+            self._append_audit(events)
         return len(prepared)
+
+    def _append_audit(self, events: list[dict]) -> None:
+        with self.audit_storage.open("a", encoding="utf-8") as stream:
+            for event in events:
+                stream.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+    def audit_events(self, limit: int = 30) -> list[dict]:
+        if not self.audit_storage.exists():
+            return []
+        lines = self.audit_storage.read_text(encoding="utf-8").splitlines()
+        return [json.loads(line) for line in reversed(lines[-limit:])]
+
+    def supplier_summary(self, days: int) -> list[dict]:
+        result = {supplier: {"supplier": supplier, "recommendations": 0, "recommended_units": 0,
+                             "approved_positions": 0, "approved_units": 0}
+                  for supplier in sorted({product.supplier for product in self.products})}
+        for row in self.rows(days):
+            if (row.get("quantity") or 0) > 0:
+                result[row["supplier"]]["recommendations"] += 1
+                result[row["supplier"]]["recommended_units"] += row["quantity"]
+        for item in self.approved.values():
+            if item["supplier"] in result:
+                result[item["supplier"]]["approved_positions"] += 1
+                result[item["supplier"]]["approved_units"] += item["quantity"]
+        return list(result.values())
 
     def set_stock(self, supplier: str, code: str, amount: object) -> None:
         product = self.by_key.get((supplier, code))
@@ -97,6 +148,7 @@ class AppState:
         if not math.isfinite(number) or number < 0 or number > 100_000_000:
             raise ValueError("Остаток должен быть неотрицательным числом")
         with self.lock:
+            previous = product.free_stock if product.stock_as_of == self.as_of else None
             product.free_stock = number
             product.stock_as_of = self.as_of
             if "Остаток внесён вручную" not in product.warnings:
@@ -112,12 +164,19 @@ class AppState:
             if self.storage.exists():
                 self.storage.write_text(json.dumps(self.approved, ensure_ascii=False, indent=2), encoding="utf-8")
             self.cache.clear()
+            self._append_audit([{"event": "stock", "at": datetime.now(timezone.utc).isoformat(),
+                                 "supplier": supplier, "code": code,
+                                 "previous_stock": previous, "new_stock": number}])
 
-    def export_csv(self) -> bytes:
+    def export_csv(self, supplier: str | None = None) -> bytes:
+        if self.report.get("mode") == "partner":
+            raise ValueError("Экспорт заказа по данным партнёра заблокирован до подтверждения параметров закупки")
         output = io.StringIO()
         writer = csv.writer(output, delimiter=";")
         writer.writerow(["Поставщик", "Код 1С", "Наименование", "Количество", "Рекомендация", "Дата среза", "Горизонт, дни", "Обоснование"])
         for item in sorted(self.approved.values(), key=lambda x: (x["supplier"], x["code"])):
+            if supplier and item["supplier"] != supplier:
+                continue
             writer.writerow([_csv_text(item.get(key)) for key in (
                 "supplier", "code", "name", "quantity", "recommended_quantity", "as_of", "coverage_days", "reason"
             )])
@@ -143,8 +202,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path)
-        if path.path in ("/", "/app.js", "/style.css"):
-            filename = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css"}[path.path]
+        pages = {"/": "index.html", "/recommendations.html": "recommendations.html",
+                 "/suppliers.html": "suppliers.html", "/audit.html": "audit.html",
+                 "/settings.html": "settings.html", "/app.js": "app.js",
+                 "/i18n.js": "i18n.js", "/style.css": "style.css"}
+        if path.path in pages:
+            filename = pages[path.path]
             mime = "text/html; charset=utf-8" if filename.endswith(".html") else "text/javascript; charset=utf-8" if filename.endswith(".js") else "text/css; charset=utf-8"
             self._send((PUBLIC / filename).read_bytes(), mime)
             return
@@ -175,6 +238,7 @@ class Handler(BaseHTTPRequestHandler):
                         and (not only_orders or (r.get("quantity") or 0) > 0)]
             self._json({
                 "rows": filtered[offset:offset + limit], "total": len(filtered), "offset": offset,
+                "suppliers": self.state.supplier_summary(settings.coverage_days),
                 "summary": {"products": len(rows), "ready": sum(r["status"] == "ready" for r in rows),
                             "orders": sum((r.get("quantity") or 0) > 0 for r in rows),
                             "needs_stock": sum(r["status"] == "needs_stock" for r in rows),
@@ -183,6 +247,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path.path == "/api/approved":
             self._json({"items": list(self.state.approved.values())})
+            return
+        if path.path == "/api/audit":
+            self._json({"events": self.state.audit_events()})
             return
         if path.path == "/api/synthetic-sales.csv":
             if self.state.report.get("mode") != "synthetic":
@@ -201,10 +268,16 @@ class Handler(BaseHTTPRequestHandler):
                        disposition='attachment; filename="synthetic_customer_sales.csv"')
             return
         if path.path == "/api/export.csv":
-            if not self.state.approved:
+            supplier = parse_qs(path.query).get("supplier", [None])[0]
+            if supplier and supplier not in {p.supplier for p in self.state.products}:
+                self._json({"error": "Поставщик не найден"}, 404)
+                return
+            if not any(not supplier or item["supplier"] == supplier for item in self.state.approved.values()):
                 self._json({"error": "Нет утверждённых позиций"}, 400)
                 return
-            self._send(self.state.export_csv(), "text/csv; charset=utf-8", disposition='attachment; filename="supplier_orders.csv"')
+            filename = "supplier_orders.csv" if not supplier else f"supplier_order_{hashlib.sha256(supplier.encode()).hexdigest()[:8]}.csv"
+            self._send(self.state.export_csv(supplier), "text/csv; charset=utf-8",
+                       disposition=f'attachment; filename="{filename}"')
             return
         self._json({"error": "Not found"}, 404)
 

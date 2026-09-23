@@ -1,0 +1,2115 @@
+{
+  "dataset": "Deterministic fictional products and customers; regular demand is known before anomalies",
+  "period": "2025-01..2026-08",
+  "method": "Monthly rolling origin; forecast and trailing-12-month baseline use only months closed by snapshot",
+  "overall": {
+    "observations": 240,
+    "model_wape": 0.0906,
+    "baseline_wape": 0.1994,
+    "model_mae": 3.34,
+    "baseline_mae": 7.36,
+    "model_better": true
+  },
+  "by_supplier": {
+    "Демо-поставщик А": {
+      "observations": 120,
+      "model_wape": 0.1275,
+      "baseline_wape": 0.291,
+      "model_mae": 6.16,
+      "baseline_mae": 14.05,
+      "model_better": true
+    },
+    "Демо-поставщик Б": {
+      "observations": 120,
+      "model_wape": 0.0209,
+      "baseline_wape": 0.0263,
+      "model_mae": 0.53,
+      "baseline_mae": 0.67,
+      "model_better": true
+    }
+  },
+  "by_month": {
+    "2025-01": {
+      "observations": 12,
+      "model_wape": 0.0915,
+      "baseline_wape": 0.216,
+      "model_mae": 3.42,
+      "baseline_mae": 8.08,
+      "model_better": true
+    },
+    "2025-02": {
+      "observations": 12,
+      "model_wape": 0.0691,
+      "baseline_wape": 0.159,
+      "model_mae": 2.52,
+      "baseline_mae": 5.79,
+      "model_better": true
+    },
+    "2025-03": {
+      "observations": 12,
+      "model_wape": 0.106,
+      "baseline_wape": 0.0573,
+      "model_mae": 3.75,
+      "baseline_mae": 2.03,
+      "model_better": false
+    },
+    "2025-04": {
+      "observations": 12,
+      "model_wape": 0.0986,
+      "baseline_wape": 0.0537,
+      "model_mae": 3.49,
+      "baseline_mae": 1.9,
+      "model_better": false
+    },
+    "2025-05": {
+      "observations": 12,
+      "model_wape": 0.0912,
+      "baseline_wape": 0.0502,
+      "model_mae": 3.23,
+      "baseline_mae": 1.78,
+      "model_better": false
+    },
+    "2025-06": {
+      "observations": 12,
+      "model_wape": 0.0936,
+      "baseline_wape": 0.2933,
+      "model_mae": 3.38,
+      "baseline_mae": 10.58,
+      "model_better": true
+    },
+    "2025-07": {
+      "observations": 12,
+      "model_wape": 0.0491,
+      "baseline_wape": 0.3267,
+      "model_mae": 1.85,
+      "baseline_mae": 12.33,
+      "model_better": true
+    },
+    "2025-08": {
+      "observations": 12,
+      "model_wape": 0.0343,
+      "baseline_wape": 0.2886,
+      "model_mae": 1.28,
+      "baseline_mae": 10.75,
+      "model_better": true
+    },
+    "2025-09": {
+      "observations": 12,
+      "model_wape": 0.0756,
+      "baseline_wape": 0.189,
+      "model_mae": 2.68,
+      "baseline_mae": 6.7,
+      "model_better": true
+    },
+    "2025-10": {
+      "observations": 12,
+      "model_wape": 0.0893,
+      "baseline_wape": 0.2008,
+      "model_mae": 3.16,
+      "baseline_mae": 7.11,
+      "model_better": true
+    },
+    "2025-11": {
+      "observations": 12,
+      "model_wape": 0.0891,
+      "baseline_wape": 0.2032,
+      "model_mae": 3.16,
+      "baseline_mae": 7.2,
+      "model_better": true
+    },
+    "2025-12": {
+      "observations": 12,
+      "model_wape": 0.104,
+      "baseline_wape": 0.3093,
+      "model_mae": 3.84,
+      "baseline_mae": 11.42,
+      "model_better": true
+    },
+    "2026-01": {
+      "observations": 12,
+      "model_wape": 0.1144,
+      "baseline_wape": 0.3098,
+      "model_mae": 4.46,
+      "baseline_mae": 12.08,
+      "model_better": true
+    },
+    "2026-02": {
+      "observations": 12,
+      "model_wape": 0.0935,
+      "baseline_wape": 0.2633,
+      "model_mae": 3.55,
+      "baseline_mae": 10.01,
+      "model_better": true
+    },
+    "2026-03": {
+      "observations": 12,
+      "model_wape": 0.1295,
+      "baseline_wape": 0.1746,
+      "model_mae": 4.79,
+      "baseline_mae": 6.46,
+      "model_better": true
+    },
+    "2026-04": {
+      "observations": 12,
+      "model_wape": 0.1157,
+      "baseline_wape": 0.177,
+      "model_mae": 4.28,
+      "baseline_mae": 6.55,
+      "model_better": true
+    },
+    "2026-05": {
+      "observations": 12,
+      "model_wape": 0.1448,
+      "baseline_wape": 0.1794,
+      "model_mae": 5.36,
+      "baseline_mae": 6.64,
+      "model_better": true
+    },
+    "2026-06": {
+      "observations": 12,
+      "model_wape": 0.1107,
+      "baseline_wape": 0.1639,
+      "model_mae": 4.17,
+      "baseline_mae": 6.17,
+      "model_better": true
+    },
+    "2026-07": {
+      "observations": 12,
+      "model_wape": 0.0644,
+      "baseline_wape": 0.196,
+      "model_mae": 2.53,
+      "baseline_mae": 7.71,
+      "model_better": true
+    },
+    "2026-08": {
+      "observations": 12,
+      "model_wape": 0.0512,
+      "baseline_wape": 0.1522,
+      "model_mae": 1.99,
+      "baseline_mae": 5.91,
+      "model_better": true
+    }
+  },
+  "points": [
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 115,
+      "forecast": 101.76,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 85.0,
+      "baseline": 85.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 11,
+      "forecast": 12.16,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 30,
+      "forecast": 33.4,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 14.0,
+      "baseline": 14.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 9.03,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 37.25,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 96,
+      "forecast": 104.34,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 87.52,
+      "baseline": 86.25
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 13,
+      "forecast": 11.95,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 35,
+      "forecast": 32.32,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 14.5,
+      "baseline": 14.25
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 8.61,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 35.52,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 90.07,
+      "baseline": 87.5
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 15.02,
+      "baseline": 14.5
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 92.67,
+      "baseline": 88.75
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 15.54,
+      "baseline": 14.75
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 95.29,
+      "baseline": 90.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 16.07,
+      "baseline": 15.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 38,
+      "forecast": 54.1,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 97.96,
+      "baseline": 166.25
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 27,
+      "forecast": 22.17,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 75,
+      "forecast": 61.22,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 16.61,
+      "baseline": 15.25
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.34,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.26,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 38,
+      "forecast": 44.91,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.66,
+      "baseline": 167.5
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 32,
+      "forecast": 29.23,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 90,
+      "forecast": 81.66,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.16,
+      "baseline": 15.5
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.34,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.26,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 45,
+      "forecast": 42.89,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.45,
+      "baseline": 168.75
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 29,
+      "forecast": 31.55,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 80,
+      "forecast": 87.48,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.11,
+      "baseline": 15.75
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.49,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.9,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 52.21,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.28,
+      "baseline": 170.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 52.0,
+      "baseline": 52.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 23.06,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 64.48,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.07,
+      "baseline": 16.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-09",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 52.21,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.15,
+      "baseline": 171.25
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 46.02,
+      "baseline": 48.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 23.06,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 64.48,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.04,
+      "baseline": 16.25
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-10",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 52.21,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.07,
+      "baseline": 172.5
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 46.02,
+      "baseline": 48.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 23.06,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 64.48,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.02,
+      "baseline": 16.5
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-11",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 102,
+      "forecast": 79.52,
+      "baseline": 68.17
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 100,
+      "forecast": 100.02,
+      "baseline": 173.75
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 46.02,
+      "baseline": 48.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 13,
+      "forecast": 16.54,
+      "baseline": 19.42
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 35,
+      "forecast": 45.25,
+      "baseline": 53.75
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 17,
+      "forecast": 17.0,
+      "baseline": 16.75
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.0,
+      "baseline": 42.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 8.74,
+      "baseline": 8.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.0,
+      "baseline": 11.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 36.07,
+      "baseline": 33.0
+    },
+    {
+      "month": "2025-12",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 115,
+      "forecast": 101.76,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 93.57,
+      "baseline": 175.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 47.3,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 11,
+      "forecast": 12.16,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 30,
+      "forecast": 33.4,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 17.0,
+      "baseline": 17.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 9.03,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 37.25,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-01",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 96,
+      "forecast": 104.34,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 96.08,
+      "baseline": 176.33
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 47.3,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 13,
+      "forecast": 11.95,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 35,
+      "forecast": 32.32,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 17.5,
+      "baseline": 17.25
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 8.61,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 35.52,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-02",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 98.63,
+      "baseline": 177.67
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 47.3,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 18.01,
+      "baseline": 17.5
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-03",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 101.21,
+      "baseline": 179.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 53.67,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 18.53,
+      "baseline": 17.75
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-04",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 64,
+      "forecast": 84.24,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 144.24,
+      "baseline": 180.33
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 53.67,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 18,
+      "forecast": 14.78,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 50,
+      "forecast": 40.81,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 19.06,
+      "baseline": 18.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.91,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 32.62,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-05",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 38,
+      "forecast": 54.1,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 106.46,
+      "baseline": 106.67
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 53.67,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 27,
+      "forecast": 22.17,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 75,
+      "forecast": 61.22,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 19.59,
+      "baseline": 18.25
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.34,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.26,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-06",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 38,
+      "forecast": 44.91,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 109.14,
+      "baseline": 108.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 53.67,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 32,
+      "forecast": 29.23,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 90,
+      "forecast": 81.66,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 20.13,
+      "baseline": 18.5
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.34,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.26,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-07",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A101",
+      "actual": 45,
+      "forecast": 42.89,
+      "baseline": 68.17
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A202",
+      "actual": 116,
+      "forecast": 108.95,
+      "baseline": 109.33
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B310",
+      "actual": 52,
+      "forecast": 53.67,
+      "baseline": 48.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B440",
+      "actual": 24,
+      "forecast": 24.0,
+      "baseline": 24.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A303",
+      "actual": 29,
+      "forecast": 31.55,
+      "baseline": 19.42
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A404",
+      "actual": 80,
+      "forecast": 87.48,
+      "baseline": 53.75
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B510",
+      "actual": 20,
+      "forecast": 20.09,
+      "baseline": 18.75
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B620",
+      "actual": 42,
+      "forecast": 42.25,
+      "baseline": 42.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A505",
+      "actual": 8,
+      "forecast": 7.49,
+      "baseline": 8.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B730",
+      "actual": 11,
+      "forecast": 11.07,
+      "baseline": 11.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик А",
+      "code": "DEMO-A606",
+      "actual": 33,
+      "forecast": 30.9,
+      "baseline": 33.0
+    },
+    {
+      "month": "2026-08",
+      "supplier": "Демо-поставщик Б",
+      "code": "DEMO-B840",
+      "actual": 6,
+      "forecast": 6.0,
+      "baseline": 6.0
+    }
+  ]
+}

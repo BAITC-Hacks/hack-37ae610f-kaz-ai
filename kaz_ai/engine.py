@@ -35,6 +35,8 @@ class Product:
     category: str | None = None
     source_growth: float | None = None
     moq: int = 1
+    lead_time_days: int | None = None
+    safety_days: int = 0
     sales: list[Sale] = field(default_factory=list)
     stockout_days: dict[str, int] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
@@ -55,7 +57,7 @@ def _month_date(key: str) -> date:
 
 
 def _closed_months(values: dict[str, float], as_of: date) -> list[str]:
-    return sorted(k for k in values if _month_date(k).replace(day=calendar.monthrange(*map(int, k.split("-")))[1]) < as_of)
+    return sorted(k for k in values if _month_date(k).replace(day=calendar.monthrange(*map(int, k.split("-")))[1]) <= as_of)
 
 
 def _median(values: list[float]) -> float:
@@ -211,8 +213,12 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
     own_weight = 0.7 if sum(v > 0 for v in adjusted.values()) >= 12 else 0.25
     season = {m: _clamp(own_weight * own_season[m] + (1 - own_weight) * peer[m], 0.4, 2.5) for m in range(1, 13)}
     growth = _trend(adjusted, product.source_growth)
-    forecast = _forecast_days(settings.as_of, settings.coverage_days, base, season, growth)
-    horizon_end = settings.as_of + timedelta(days=settings.coverage_days)
+    lead_days = max(0, int(product.lead_time_days or 0))
+    safety_days = max(0, int(product.safety_days))
+    target_days = settings.coverage_days + lead_days + safety_days
+    coverage_forecast = _forecast_days(settings.as_of, settings.coverage_days, base, season, growth)
+    forecast = _forecast_days(settings.as_of, target_days, base, season, growth)
+    horizon_end = settings.as_of + timedelta(days=target_days)
     inbound = sum(max(0.0, a.quantity) for a in product.inbound if settings.as_of < a.due <= horizon_end)
     stock = product.free_stock if product.stock_as_of == settings.as_of else None
     if product.free_stock is not None and product.stock_as_of != settings.as_of:
@@ -226,16 +232,22 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         shortage = max(0.0, forecast - max(0.0, stock) - inbound)
         multiple = max(1, int(product.moq))
         quantity = math.ceil((shortage - 1e-9) / multiple) * multiple if shortage > 1e-9 else 0
-    soon_days = min(14, settings.coverage_days)
+    soon_days = lead_days if lead_days else min(14, settings.coverage_days)
     soon_demand = _forecast_days(settings.as_of, soon_days, base, season, growth)
     soon_inbound = sum(max(0.0, a.quantity) for a in product.inbound
                        if settings.as_of < a.due <= settings.as_of + timedelta(days=soon_days))
-    urgency = "данные" if stock is None else "высокая" if max(0.0, stock) + soon_inbound < soon_demand else "обычная"
+    risk_before_delivery = max(0.0, soon_demand - max(0.0, stock) - soon_inbound) if stock is not None else None
+    urgency = "данные" if stock is None else "высокая" if risk_before_delivery > 0 else "обычная"
     reason = (
-        f"Спрос на {settings.coverage_days} дн.: {forecast:.1f}; "
+        f"Спрос на {target_days} дн.: {forecast:.1f}; "
         f"свободный остаток: {stock:.0f}; " if stock is not None else
-        f"Спрос на {settings.coverage_days} дн.: {forecast:.1f}; текущий остаток не предоставлен; "
-    ) + f"в пути до {horizon_end:%d.%m}: {inbound:.0f}; рост: {growth:+.0%}; кратность: {max(1, product.moq)}."
+        f"Спрос на {target_days} дн.: {forecast:.1f}; текущий остаток не предоставлен; "
+    ) + (f"покрытие: {settings.coverage_days} дн.; срок поставки: {lead_days} дн.; "
+         f"страховой запас: {safety_days} дн. (+{forecast - coverage_forecast:.1f} к спросу); "
+         f"в пути до {horizon_end:%d.%m}: {inbound:.0f}; рост: {growth:+.0%}; "
+         f"кратность: {max(1, product.moq)}.")
+    if product.lead_time_days is None:
+        flags.append("Срок поставки не задан; использован только выбранный горизонт")
     if shortage is not None:
         reason += f" Потребность до округления: {shortage:.1f}; предложено: {quantity}."
     if excluded:
@@ -249,6 +261,10 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         "supplier": product.supplier, "code": product.code, "name": product.name,
         "category": product.category or "—", "status": status, "quantity": quantity,
         "urgency": urgency, "forecast": round(forecast, 2), "base_monthly": round(base, 2),
+        "coverage_forecast": round(coverage_forecast, 2), "target_days": target_days,
+        "lead_time_days": product.lead_time_days, "safety_days": safety_days,
+        "lead_demand": round(soon_demand, 2), "lead_inbound": round(soon_inbound, 2),
+        "risk_before_delivery": round(risk_before_delivery, 2) if risk_before_delivery is not None else None,
         "free_stock": stock, "inbound": round(inbound, 2), "moq": max(1, product.moq),
         "growth": round(growth, 4), "seasonal_factor": round(season[(settings.as_of + timedelta(days=1)).month], 3),
         "excluded_outliers": round(sum(excluded.values()), 2),

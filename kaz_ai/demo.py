@@ -7,7 +7,8 @@ from datetime import date
 from .engine import Arrival, Product, Sale
 
 
-def demo_products(as_of: date = date(2026, 9, 22)) -> list[Product]:
+def demo_dataset(as_of: date = date(2026, 9, 22)) -> tuple[list[Product], dict[str, dict[str, float]]]:
+    """Return observable transactions and independent regular-demand ground truth."""
     months = [f"{year}-{month:02d}" for year in (2024, 2025, 2026)
               for month in range(1, 13) if (year, month) <= (2026, 8)]
 
@@ -49,6 +50,13 @@ def demo_products(as_of: date = date(2026, 9, 22)) -> list[Product]:
                 free_stock=None, stock_as_of=None, category="Монтаж", moq=2),
     ]
 
+    safety_by_category = {"Защита": 7, "Кабель": 5, "Монтаж": 4,
+                          "Розетки": 6, "Выключатели": 5}
+    for product in products:
+        product.lead_time_days = 12 if product.supplier == a else 21
+        product.safety_days = safety_by_category[product.category]
+    regular_demand = {product.code: dict(product.monthly_sales) for product in products}
+
     # Detail lines reconcile to monthly totals; all customer IDs are fictional.
     products[1].monthly_sales["2025-05"] += 900
     products[2].monthly_sales["2025-09"] = 4
@@ -63,4 +71,8 @@ def demo_products(as_of: date = date(2026, 9, 22)) -> list[Product]:
                                               f"{product.code}-{month}-{i}", f"DEMO-C{i:03d}"))
         if product.code == "DEMO-A202":
             product.sales.append(Sale("2025-05", 900, "DEMO-ONE-OFF-001", "DEMO-C017"))
-    return products
+    return products, regular_demand
+
+
+def demo_products(as_of: date = date(2026, 9, 22)) -> list[Product]:
+    return demo_dataset(as_of)[0]
