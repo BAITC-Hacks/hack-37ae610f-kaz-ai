@@ -1,0 +1,24 @@
+{
+  "scenario_name": "DEMO — Systeme Electric, параметры не подтверждены поставщиком",
+  "as_of": "2026-09-22",
+  "lead_time_days": 60,
+  "review_period_days": 30,
+  "default_safety_stock_days": 15,
+  "category_safety_stock_days": {
+    "1": 30,
+    "2": 25,
+    "3": 20,
+    "5": 15,
+    "7": 0
+  },
+  "growth_multiplier_bounds": [0.75, 1.5],
+  "seasonality_multiplier_bounds": [0.5, 2.0],
+  "notes": [
+    "Lead time 60 days and review period 30 days are demo assumptions.",
+    "Category numbers are assumed to run from higher priority 1 to inactive 7; the partner must confirm the legend.",
+    "Growth multiplier is 1 + source growth rate, clipped to the configured bounds.",
+    "Seasonality multiplier is 1 + source seasonality rate, clipped to the configured bounds.",
+    "Every calculated line remains subject to human approval and is marked as a demo result."
+  ]
+}
+

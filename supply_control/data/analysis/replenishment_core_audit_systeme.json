@@ -1,0 +1,233 @@
+{
+  "as_of": "2026-09-22",
+  "source_records": 497,
+  "records_with_moq": 469,
+  "partial_september_excluded_by_forecast": true,
+  "source_growth_and_seasonality_not_applied_without_business_definition": true,
+  "demand_classes": {
+    "smooth": 108,
+    "no_demand": 6,
+    "erratic": 96,
+    "lumpy": 220,
+    "intermittent": 67
+  },
+  "forecast_models": {
+    "last_complete_month": 497
+  },
+  "forecast_review_reasons": {
+    "stockout_data_missing": 497,
+    "negative_monthly_values_ignored": 183,
+    "lumpy_demand": 220,
+    "sales_history_gaps": 214,
+    "intermittent_demand": 67
+  },
+  "recommendation_statuses": {
+    "blocked": 497
+  },
+  "blocking_reasons": {
+    "missing_or_invalid_lead_time": 497,
+    "missing_or_invalid_safety_stock": 497,
+    "missing_or_invalid_moq": 28
+  },
+  "samples": [
+    {
+      "sku": "300200428_",
+      "name": "A398 Роз. с з/к 16А с/у б/рамки \"ATLAS\" алюминий ATN343 (10)",
+      "forecast": {
+        "base_monthly_units": 124.0,
+        "monthly_units": 124.0,
+        "model": "last_complete_month",
+        "demand_class": "smooth",
+        "history_months": 32,
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0,
+        "category_multiplier": 1.0,
+        "stockout_uplift_units": 0.0,
+        "review_reasons": [
+          "stockout_data_missing"
+        ]
+      },
+      "recommendation": {
+        "sku": "300200428_",
+        "supplier": "Systeme Electric",
+        "status": "blocked",
+        "recommended_quantity": null,
+        "urgency": "unknown",
+        "forecast_monthly_units": 124.0,
+        "cover_days": null,
+        "target_stock": null,
+        "free_stock": 1118.0,
+        "eligible_inbound": 0.0,
+        "excluded_inbound": 0,
+        "raw_need": null,
+        "moq": 10.0,
+        "projected_stockout_date": null,
+        "explanation": "Расчёт заблокирован: missing_or_invalid_lead_time, missing_or_invalid_safety_stock.",
+        "reasons": [
+          "missing_or_invalid_lead_time",
+          "missing_or_invalid_safety_stock"
+        ]
+      }
+    },
+    {
+      "sku": "300200442_",
+      "name": "A404 USB розетка - 2 порта с/у б/рамки \"ATLAS\" алюминий ATN333 (1)",
+      "forecast": {
+        "base_monthly_units": 0.0,
+        "monthly_units": 0.0,
+        "model": "last_complete_month",
+        "demand_class": "no_demand",
+        "history_months": 32,
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0,
+        "category_multiplier": 1.0,
+        "stockout_uplift_units": 0.0,
+        "review_reasons": [
+          "stockout_data_missing"
+        ]
+      },
+      "recommendation": {
+        "sku": "300200442_",
+        "supplier": "Systeme Electric",
+        "status": "blocked",
+        "recommended_quantity": null,
+        "urgency": "unknown",
+        "forecast_monthly_units": 0.0,
+        "cover_days": null,
+        "target_stock": null,
+        "free_stock": 0.0,
+        "eligible_inbound": 0.0,
+        "excluded_inbound": 0,
+        "raw_need": null,
+        "moq": null,
+        "projected_stockout_date": null,
+        "explanation": "Расчёт заблокирован: missing_or_invalid_moq, missing_or_invalid_lead_time, missing_or_invalid_safety_stock.",
+        "reasons": [
+          "missing_or_invalid_moq",
+          "missing_or_invalid_lead_time",
+          "missing_or_invalid_safety_stock"
+        ]
+      }
+    },
+    {
+      "sku": "ATN000330",
+      "name": "SO + USB РОЗЕТКА A+A, 5В/2,4А, 2х5В/1,2А, механизм \"ATLAS\" алюминий ATN330",
+      "forecast": {
+        "base_monthly_units": 0.0,
+        "monthly_units": 0.0,
+        "model": "last_complete_month",
+        "demand_class": "no_demand",
+        "history_months": 32,
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0,
+        "category_multiplier": 1.0,
+        "stockout_uplift_units": 0.0,
+        "review_reasons": [
+          "stockout_data_missing"
+        ]
+      },
+      "recommendation": {
+        "sku": "ATN000330",
+        "supplier": "Systeme Electric",
+        "status": "blocked",
+        "recommended_quantity": null,
+        "urgency": "unknown",
+        "forecast_monthly_units": 0.0,
+        "cover_days": null,
+        "target_stock": null,
+        "free_stock": 0.0,
+        "eligible_inbound": 0.0,
+        "excluded_inbound": 0,
+        "raw_need": null,
+        "moq": null,
+        "projected_stockout_date": null,
+        "explanation": "Расчёт заблокирован: missing_or_invalid_moq, missing_or_invalid_lead_time, missing_or_invalid_safety_stock.",
+        "reasons": [
+          "missing_or_invalid_moq",
+          "missing_or_invalid_lead_time",
+          "missing_or_invalid_safety_stock"
+        ]
+      }
+    },
+    {
+      "sku": "300200430_",
+      "name": "А384 Выкл 1 кл 10А с/у \"ATLAS\" алюминий ATN312 (10)",
+      "forecast": {
+        "base_monthly_units": 31.0,
+        "monthly_units": 31.0,
+        "model": "last_complete_month",
+        "demand_class": "erratic",
+        "history_months": 32,
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0,
+        "category_multiplier": 1.0,
+        "stockout_uplift_units": 0.0,
+        "review_reasons": [
+          "negative_monthly_values_ignored",
+          "stockout_data_missing"
+        ]
+      },
+      "recommendation": {
+        "sku": "300200430_",
+        "supplier": "Systeme Electric",
+        "status": "blocked",
+        "recommended_quantity": null,
+        "urgency": "unknown",
+        "forecast_monthly_units": 31.0,
+        "cover_days": null,
+        "target_stock": null,
+        "free_stock": 76.0,
+        "eligible_inbound": 0.0,
+        "excluded_inbound": 0,
+        "raw_need": null,
+        "moq": 10.0,
+        "projected_stockout_date": null,
+        "explanation": "Расчёт заблокирован: missing_or_invalid_lead_time, missing_or_invalid_safety_stock.",
+        "reasons": [
+          "missing_or_invalid_lead_time",
+          "missing_or_invalid_safety_stock"
+        ]
+      }
+    },
+    {
+      "sku": "300200588_",
+      "name": "А3844 Выкл 1 кл 10А механизм \"ATLAS\" алюминий ATN311 (10)",
+      "forecast": {
+        "base_monthly_units": 0.0,
+        "monthly_units": 0.0,
+        "model": "last_complete_month",
+        "demand_class": "smooth",
+        "history_months": 32,
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0,
+        "category_multiplier": 1.0,
+        "stockout_uplift_units": 0.0,
+        "review_reasons": [
+          "negative_monthly_values_ignored",
+          "stockout_data_missing"
+        ]
+      },
+      "recommendation": {
+        "sku": "300200588_",
+        "supplier": "Systeme Electric",
+        "status": "blocked",
+        "recommended_quantity": null,
+        "urgency": "unknown",
+        "forecast_monthly_units": 0.0,
+        "cover_days": null,
+        "target_stock": null,
+        "free_stock": 260.0,
+        "eligible_inbound": 0.0,
+        "excluded_inbound": 0,
+        "raw_need": null,
+        "moq": 10.0,
+        "projected_stockout_date": null,
+        "explanation": "Расчёт заблокирован: missing_or_invalid_lead_time, missing_or_invalid_safety_stock.",
+        "reasons": [
+          "missing_or_invalid_lead_time",
+          "missing_or_invalid_safety_stock"
+        ]
+      }
+    }
+  ]
+}

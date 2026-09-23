@@ -1,0 +1,489 @@
+{
+  "summary": {
+    "mode": "synthetic",
+    "scenario": "Проверка обязательных требований на синтетических данных",
+    "source_label": "Безопасный демонстрационный набор",
+    "as_of": "2026-09-22",
+    "warning": "Синтетические товары и ID клиентов. Реальные коммерческие данные отсутствуют.",
+    "source_skus": 12,
+    "positive_order_lines": 7,
+    "zero_quantity_lines": 5,
+    "blocked_lines": 1,
+    "total_order_units_demo": 231,
+    "valued_order_lines": 0,
+    "total_order_value_demo": null,
+    "status_counts": {
+      "ready_for_approval": 11,
+      "blocked": 1
+    },
+    "urgency_counts": {
+      "critical": 7,
+      "normal": 4,
+      "unknown": 1
+    },
+    "category_counts": {
+      "Кабель": 1,
+      "Защита": 3,
+      "Монтаж": 3,
+      "Розетки": 3,
+      "Выключатели": 2
+    },
+    "growth_rates_clamped": 0,
+    "seasonality_rates_clamped": 0,
+    "stockout_coverage_percent": 100,
+    "customer_id_coverage_percent": 100,
+    "requirements_passed": 5,
+    "requirements_total": 5
+  },
+  "assumptions": {
+    "lead_time_days": 30,
+    "review_period_days": 0,
+    "category_safety_stock_days": {},
+    "growth_multiplier_bounds": [
+      0.5,
+      1.9
+    ],
+    "notes": [
+      "Все данные вымышлены.",
+      "Набор предназначен для проверки обязательных требований кейса.",
+      "Поставщику ничего не отправляется без подтверждения сотрудника."
+    ]
+  },
+  "proofs": [
+    {
+      "id": "inputs",
+      "title": "Все входные факторы",
+      "status": "passed",
+      "evidence": "История, остаток, товар в пути, категория, рост и MOQ влияют на расчёт."
+    },
+    {
+      "id": "seasonality_growth",
+      "title": "Сезонность и рост",
+      "status": "passed",
+      "evidence": "В наборе есть зимний и летний профиль, а также устойчиво растущие товары."
+    },
+    {
+      "id": "stockout",
+      "title": "Упущенный спрос",
+      "status": "passed",
+      "evidence": "Для DEMO-B310 восстановлено 11 ед. спроса."
+    },
+    {
+      "id": "one_off",
+      "title": "Разовый крупный заказ",
+      "status": "passed",
+      "evidence": "Заказ клиента DEMO-C017 на 900 ед. исключён из регулярного спроса."
+    },
+    {
+      "id": "supplier_output",
+      "title": "Группировка и объяснение",
+      "status": "passed",
+      "evidence": "Результаты сгруппированы по двум поставщикам и содержат объяснение каждой строки."
+    }
+  ],
+  "recommendations": [
+    {
+      "sku": "DEMO-A202",
+      "supplier_sku": null,
+      "name": "Кабель монтажный",
+      "supplier": "Демо-поставщик А",
+      "category": "Кабель",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 106.22,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.936,
+        "growth_multiplier": 1.0506
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 85,
+        "forecast_monthly_units": 106.22,
+        "cover_days": 30,
+        "target_stock": 106.22,
+        "free_stock": 25,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 5,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 106.2; свободный остаток: 25; в пути до 22.10: 0; рост: +5%; кратность: 5. Потребность до округления: 81.2; предложено: 85. Исключено разовых всплесков: 900. Из них по ID клиента: DEMO-C017: 900.",
+        "reasons": [
+          "one_off_excluded",
+          "customer_level_outlier"
+        ],
+        "excluded_outliers": 900.0,
+        "excluded_customers": {
+          "DEMO-C017": 900.0
+        },
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-A606",
+      "supplier_sku": null,
+      "name": "УЗО двухполюсное",
+      "supplier": "Демо-поставщик А",
+      "category": "Защита",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 31.85,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.989,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 36,
+        "forecast_monthly_units": 31.85,
+        "cover_days": 30,
+        "target_stock": 31.85,
+        "free_stock": 0,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 6,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 31.9; свободный остаток: 0; в пути до 22.10: 0; рост: +0%; кратность: 6. Потребность до округления: 31.9; предложено: 36.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-A303",
+      "supplier_sku": null,
+      "name": "Распределительная коробка",
+      "supplier": "Демо-поставщик А",
+      "category": "Монтаж",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 22.52,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.928,
+        "growth_multiplier": 1.2802
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 24,
+        "forecast_monthly_units": 22.52,
+        "cover_days": 30,
+        "target_stock": 22.52,
+        "free_stock": 6,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 12,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 22.5; свободный остаток: 6; в пути до 22.10: 0; рост: +28%; кратность: 12. Потребность до округления: 16.5; предложено: 24.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-A505",
+      "supplier_sku": null,
+      "name": "Контактор модульный",
+      "supplier": "Демо-поставщик А",
+      "category": "Защита",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 7.72,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.989,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 6,
+        "forecast_monthly_units": 7.72,
+        "cover_days": 30,
+        "target_stock": 7.72,
+        "free_stock": 2,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 2,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 7.7; свободный остаток: 2; в пути до 22.10: 0; рост: +0%; кратность: 2. Потребность до округления: 5.7; предложено: 6.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-A101",
+      "supplier_sku": null,
+      "name": "Автоматический выключатель 16А",
+      "supplier": "Демо-поставщик А",
+      "category": "Защита",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 50.98,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.946,
+        "growth_multiplier": 0.8099000000000001
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "normal",
+        "recommended_quantity": 0,
+        "forecast_monthly_units": 50.98,
+        "cover_days": 30,
+        "target_stock": 50.98,
+        "free_stock": 38,
+        "eligible_inbound": 20,
+        "raw_need": null,
+        "moq": 10,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 51.0; свободный остаток: 38; в пути до 22.10: 20; рост: -19%; кратность: 10. Потребность до округления: 0.0; предложено: 0.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-A404",
+      "supplier_sku": null,
+      "name": "Гофротруба 20 мм",
+      "supplier": "Демо-поставщик А",
+      "category": "Монтаж",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 62.96,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.93,
+        "growth_multiplier": 1.29
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "normal",
+        "recommended_quantity": 0,
+        "forecast_monthly_units": 62.96,
+        "cover_days": 30,
+        "target_stock": 62.96,
+        "free_stock": 120,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 10,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 63.0; свободный остаток: 120; в пути до 22.10: 0; рост: +29%; кратность: 10. Потребность до округления: 0.0; предложено: 0.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-B310",
+      "supplier_sku": null,
+      "name": "Розетка с заземлением",
+      "supplier": "Демо-поставщик Б",
+      "category": "Розетки",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 47.72,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.692,
+        "growth_multiplier": 1.0673
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 40,
+        "forecast_monthly_units": 47.72,
+        "cover_days": 30,
+        "target_stock": 47.72,
+        "free_stock": 14,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 10,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 47.7; свободный остаток: 14; в пути до 22.10: 0; рост: +7%; кратность: 10. Потребность до округления: 33.7; предложено: 40. Восстановлено спроса при дефиците: 11.",
+        "reasons": [
+          "stockout_compensated"
+        ],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 11.0
+      }
+    },
+    {
+      "sku": "DEMO-B620",
+      "supplier_sku": null,
+      "name": "Рамка двухместная",
+      "supplier": "Демо-поставщик Б",
+      "category": "Розетки",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 40.45,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.935,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 30,
+        "forecast_monthly_units": 40.45,
+        "cover_days": 30,
+        "target_stock": 40.45,
+        "free_stock": 15,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 10,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 40.5; свободный остаток: 15; в пути до 22.10: 0; рост: +0%; кратность: 10. Потребность до округления: 25.5; предложено: 30.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-B510",
+      "supplier_sku": null,
+      "name": "Диммер электронный",
+      "supplier": "Демо-поставщик Б",
+      "category": "Выключатели",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 19.58,
+        "model": "seasonal_trend",
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0556
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "critical",
+        "recommended_quantity": 10,
+        "forecast_monthly_units": 19.58,
+        "cover_days": 30,
+        "target_stock": 19.58,
+        "free_stock": 3,
+        "eligible_inbound": 10,
+        "raw_need": null,
+        "moq": 5,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 19.6; свободный остаток: 3; в пути до 22.10: 10; рост: +6%; кратность: 5. Потребность до округления: 6.6; предложено: 10.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-B440",
+      "supplier_sku": null,
+      "name": "Переключатель двухклавишный",
+      "supplier": "Демо-поставщик Б",
+      "category": "Выключатели",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 23.43,
+        "model": "seasonal_trend",
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "normal",
+        "recommended_quantity": 0,
+        "forecast_monthly_units": 23.43,
+        "cover_days": 30,
+        "target_stock": 23.43,
+        "free_stock": 80,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 4,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 23.4; свободный остаток: 80; в пути до 22.10: 0; рост: +0%; кратность: 4. Потребность до округления: 0.0; предложено: 0.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-B730",
+      "supplier_sku": null,
+      "name": "Панель декоративная",
+      "supplier": "Демо-поставщик Б",
+      "category": "Розетки",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 10.59,
+        "model": "seasonal_trend",
+        "seasonality_factor": 0.935,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "ready_for_approval",
+        "urgency": "normal",
+        "recommended_quantity": 0,
+        "forecast_monthly_units": 10.59,
+        "cover_days": 30,
+        "target_stock": 10.59,
+        "free_stock": 60,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 5,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 10.6; свободный остаток: 60; в пути до 22.10: 0; рост: +0%; кратность: 5. Потребность до округления: 0.0; предложено: 0.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    },
+    {
+      "sku": "DEMO-B840",
+      "supplier_sku": null,
+      "name": "Корпус щита",
+      "supplier": "Демо-поставщик Б",
+      "category": "Монтаж",
+      "unit_cost": null,
+      "order_value_demo": null,
+      "forecast": {
+        "monthly_units": 5.86,
+        "model": "seasonal_trend",
+        "seasonality_factor": 1.0,
+        "growth_multiplier": 1.0
+      },
+      "recommendation": {
+        "status": "blocked",
+        "urgency": "unknown",
+        "recommended_quantity": null,
+        "forecast_monthly_units": 5.86,
+        "cover_days": 30,
+        "target_stock": 5.86,
+        "free_stock": null,
+        "eligible_inbound": 0,
+        "raw_need": null,
+        "moq": 2,
+        "projected_stockout_date": null,
+        "explanation": "Спрос на 30 дн.: 5.9; текущий остаток не предоставлен; в пути до 22.10: 0; рост: +0%; кратность: 2.",
+        "reasons": [],
+        "excluded_outliers": 0,
+        "excluded_customers": {},
+        "imputed_stockouts": 0
+      }
+    }
+  ]
+}

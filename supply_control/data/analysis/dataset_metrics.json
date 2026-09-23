@@ -1,0 +1,446 @@
+{
+  "IEK": {
+    "transactions": {
+      "path": "data/extracted/iek/IEK/Динамика продаж_2025-2026.xlsx",
+      "source_rows_excluding_header": 171604,
+      "valid_transaction_rows": 171585,
+      "date_min": "2023-07-20T16:15:38",
+      "date_max": "2026-09-22T15:55:51",
+      "excluded_summary_or_invalid_rows": 19,
+      "unique_skus": 2150,
+      "unique_documents": 58047,
+      "warehouses": {
+        "Алматы": 171585
+      },
+      "missing_codes_in_source": 1,
+      "missing_qty_in_source": 18,
+      "positive_rows_sales": 171470,
+      "negative_rows_returns_or_reversals": 115,
+      "zero_rows": 0,
+      "gross_sales_units_positive_lines": 3848302.0,
+      "return_or_reversal_units_absolute": 1304.0,
+      "net_demand_units": 3846998.0,
+      "exact_duplicate_rows": 0,
+      "robust_large_line_candidates": 18213,
+      "top_absolute_lines": [
+        {
+          "Дата": "09.06.2025 16:12:55",
+          "Номер": "20000064179",
+          "Код": "130200305_",
+          "Номенклатура": "Петля металлическая LOOP",
+          "Склад": "Алматы",
+          "Количество": 210000.0
+        },
+        {
+          "Дата": "02.09.2026 12:00:10",
+          "Номер": "20000099834",
+          "Код": "010500008_",
+          "Номенклатура": "ВА47-29 (1ф) 25А IEK (12/144)",
+          "Склад": "Алматы",
+          "Количество": 7488.0
+        },
+        {
+          "Дата": "25.02.2025 11:33:57",
+          "Номер": "20000018830",
+          "Код": "200400104_",
+          "Номенклатура": "U/UTP, кат.6  4х2х0,23 solid, 305м ITK",
+          "Склад": "Алматы",
+          "Количество": 4590.0
+        },
+        {
+          "Дата": "28.07.2026 18:00:40",
+          "Номер": "20000084410",
+          "Код": "130300792_",
+          "Номенклатура": " Трубы гибкая двустенная красная (с протяжкой)   Ø50 IEK (50) ",
+          "Склад": "Алматы",
+          "Количество": 4300.0
+        },
+        {
+          "Дата": "19.08.2026 18:00:49",
+          "Номер": "20000094941",
+          "Код": "130300791_",
+          "Номенклатура": " Трубы гибкая двустенная красная (с протяжкой)   Ø40 IEK (50) ",
+          "Склад": "Алматы",
+          "Количество": 4000.0
+        },
+        {
+          "Дата": "22.10.2025 17:26:06",
+          "Номер": "20000117736",
+          "Код": "130300792_",
+          "Номенклатура": " Трубы гибкая двустенная красная (с протяжкой)   Ø50 IEK (50) ",
+          "Склад": "Алматы",
+          "Количество": 3750.0
+        },
+        {
+          "Дата": "15.04.2026 16:57:17",
+          "Номер": "20000038145",
+          "Код": "130300779_",
+          "Номенклатура": " Трубы гибкая двустенная красная (с протяжкой)   Ø63 IEK (50) ",
+          "Склад": "Алматы",
+          "Количество": 3750.0
+        },
+        {
+          "Дата": "29.03.2025 10:15:01",
+          "Номер": "20000029712",
+          "Код": "200400250_",
+          "Номенклатура": "F/UTP (24 AWG), кат.5Е экран, 4 пары, LDPE внеш.черный 305м ITK ",
+          "Склад": "Алматы",
+          "Количество": 3410.0
+        }
+      ]
+    },
+    "monthly_sales": {
+      "path": "data/extracted/iek/IEK/Ежемесячные продажи в количественном выражении за последние 2 года.xlsx",
+      "kind": "sales",
+      "rows_with_code": 2463,
+      "unique_skus": 2463,
+      "duplicate_code_rows": 0,
+      "months": 30,
+      "month_first": "2024-01-01T00:00:00",
+      "month_last": "2026-09-01T00:00:00",
+      "nonnull_cells": 33265,
+      "total_month_cells": 73890,
+      "nonnull_rate": 0.45019623765056166,
+      "zero_cells": 0,
+      "negative_cells": 222,
+      "last_month_nonnull_skus": 993,
+      "last_month_zero_skus": 0
+    },
+    "inventory": {
+      "path": "data/extracted/iek/IEK/Ежемесячные остатки продукции за последние 2 года  ИЭК.xlsx",
+      "kind": "inventory",
+      "rows_with_code": 2853,
+      "unique_skus": 2853,
+      "duplicate_code_rows": 0,
+      "months": 30,
+      "month_first": "2024-01-01T00:00:00",
+      "month_last": "2026-09-01T00:00:00",
+      "nonnull_cells": 60378,
+      "total_month_cells": 85590,
+      "nonnull_rate": 0.7054328776726253,
+      "zero_cells": 0,
+      "negative_cells": 5,
+      "last_month_nonnull_skus": 2056,
+      "last_month_zero_skus": 0
+    },
+    "moq": {
+      "path": "data/extracted/iek/IEK/MOQ  ИЭК.xlsx",
+      "rows_with_code": 1938,
+      "unique_skus": 1937,
+      "moq_column": "Мин. разр. к отгр.",
+      "positive_moq": 1923,
+      "zero_moq": 0,
+      "missing_or_invalid_moq": 15,
+      "moq_median_positive": 1.0,
+      "moq_p95_positive": 50.0,
+      "moq_max": 600.0
+    },
+    "in_transit": {
+      "path": "data/extracted/iek/IEK/Путь ИЭК 22.09.2026.xlsx",
+      "rows_with_code": 2623,
+      "unique_skus": 2616,
+      "shipment_columns": 6,
+      "skus_with_any_in_transit": 300,
+      "total_units_in_transit": 109517.0,
+      "orders": [
+        {
+          "order": "РФ УТ-7583 от 31 августа 2026 г. (поступление до 10.10.2026)",
+          "nonzero_skus": 11,
+          "units": 1325.0
+        },
+        {
+          "order": "РФ УТ-7974 от 10 сентября 2026 г. (поступление до 15.10.2026)",
+          "nonzero_skus": 18,
+          "units": 1709.0
+        },
+        {
+          "order": "ПП УТ-7848 от 7 сентября 2026 г. (поступление до 01.10.2026)",
+          "nonzero_skus": 152,
+          "units": 59567.0
+        },
+        {
+          "order": "УТ-8231 от 18 сентября 2026 г. (поступление до 30.09.2026)",
+          "nonzero_skus": 1,
+          "units": 10.0
+        },
+        {
+          "order": "УТ-8233 от 18 сентября 2026 г.  (поступление до 30.09.2026)",
+          "nonzero_skus": 51,
+          "units": 41095.0
+        },
+        {
+          "order": "УТ-8234 от 18 сентября 2026 г.  (поступление до 30.09.2026)",
+          "nonzero_skus": 73,
+          "units": 5811.0
+        }
+      ]
+    },
+    "join_coverage": {
+      "union_skus": 3185,
+      "all_sources_intersection_skus": 1719,
+      "sources": {
+        "transactions": {
+          "skus": 2150,
+          "coverage_of_union": 0.6750392464678179,
+          "missing_vs_union": 1035
+        },
+        "monthly_sales": {
+          "skus": 2463,
+          "coverage_of_union": 0.7733124018838304,
+          "missing_vs_union": 722
+        },
+        "inventory": {
+          "skus": 2853,
+          "coverage_of_union": 0.8957613814756672,
+          "missing_vs_union": 332
+        },
+        "moq": {
+          "skus": 1937,
+          "coverage_of_union": 0.6081632653061224,
+          "missing_vs_union": 1248
+        },
+        "in_transit": {
+          "skus": 2616,
+          "coverage_of_union": 0.8213500784929356,
+          "missing_vs_union": 569
+        }
+      },
+      "pairwise_intersections": {
+        "transactions__monthly_sales": 2139,
+        "transactions__inventory": 2150,
+        "transactions__moq": 1738,
+        "transactions__in_transit": 1939,
+        "monthly_sales__inventory": 2456,
+        "monthly_sales__moq": 1761,
+        "monthly_sales__in_transit": 2084,
+        "inventory__moq": 1854,
+        "inventory__in_transit": 2295,
+        "moq__in_transit": 1906
+      }
+    },
+    "transaction_month_reconciliation": {
+      "comparable_cells": 20039,
+      "exact_match_cells": 13014,
+      "exact_match_rate": 0.649433604471281,
+      "absolute_difference_units": 220847.0,
+      "median_absolute_difference": 0.0,
+      "cells_difference_gt_1": 5450
+    }
+  },
+  "SystemElectric": {
+    "transactions": {
+      "path": "data/extracted/systeme/Systeme electric/Динамика продаж_Syseme Electric_2025-2026.xlsx",
+      "source_rows_excluding_header": 77313,
+      "valid_transaction_rows": 77299,
+      "date_min": "2023-01-18T16:00:11",
+      "date_max": "2026-09-22T16:10:12",
+      "excluded_summary_or_invalid_rows": 14,
+      "unique_skus": 565,
+      "unique_documents": 25878,
+      "warehouses": {
+        "Алматы": 77299
+      },
+      "missing_codes_in_source": 1,
+      "missing_qty_in_source": 13,
+      "positive_rows_sales": 76997,
+      "negative_rows_returns_or_reversals": 302,
+      "zero_rows": 0,
+      "gross_sales_units_positive_lines": 6841676.0,
+      "return_or_reversal_units_absolute": 4198.0,
+      "net_demand_units": 6837478.0,
+      "exact_duplicate_rows": 0,
+      "robust_large_line_candidates": 9846,
+      "top_absolute_lines": [
+        {
+          "Дата": "06.05.2025 12:24:35",
+          "Номер": "20000044832",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 90000.0
+        },
+        {
+          "Дата": "07.08.2025 9:55:01",
+          "Номер": "20000084221",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 86400.0
+        },
+        {
+          "Дата": "17.07.2025 17:52:35",
+          "Номер": "20000075662",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 82800.0
+        },
+        {
+          "Дата": "26.08.2025 16:40:11",
+          "Номер": "20000092715",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 82800.0
+        },
+        {
+          "Дата": "21.11.2025 10:38:50",
+          "Номер": "20000131623",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 64800.0
+        },
+        {
+          "Дата": "07.09.2026 11:03:51",
+          "Номер": "20000103687",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 61200.0
+        },
+        {
+          "Дата": "17.07.2026 16:34:03",
+          "Номер": "20000079465",
+          "Код": "030200192_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х45 IMT35100 Systeme Electric (200)",
+          "Склад": "Алматы",
+          "Количество": 50400.0
+        },
+        {
+          "Дата": "25.04.2025 16:00:47",
+          "Номер": "20000041171",
+          "Код": "030200201_",
+          "Номенклатура": " Установочная коробка для твердых стен 65х60 IMT35101 Systeme Electric (120)",
+          "Склад": "Алматы",
+          "Количество": 43200.0
+        }
+      ]
+    },
+    "monthly_sales": {
+      "path": "data/extracted/systeme/Systeme electric/Ежемесячные продажи в кол-м выражении SystemElectric 2024-2026.xlsx",
+      "kind": "sales",
+      "rows_with_code": 554,
+      "unique_skus": 554,
+      "duplicate_code_rows": 0,
+      "months": 30,
+      "month_first": "2024-01-01T00:00:00",
+      "month_last": "2026-09-01T00:00:00",
+      "nonnull_cells": 10072,
+      "total_month_cells": 16620,
+      "nonnull_rate": 0.6060168471720818,
+      "zero_cells": 0,
+      "negative_cells": 279,
+      "last_month_nonnull_skus": 316,
+      "last_month_zero_skus": 0
+    },
+    "inventory": {
+      "path": "data/extracted/systeme/Systeme electric/Ежемесячные остатки SystemElectric 2024-2026.xlsx",
+      "kind": "inventory",
+      "rows_with_code": 701,
+      "unique_skus": 701,
+      "duplicate_code_rows": 0,
+      "months": 30,
+      "month_first": "2024-01-01T00:00:00",
+      "month_last": "2026-09-01T00:00:00",
+      "nonnull_cells": 16346,
+      "total_month_cells": 21030,
+      "nonnull_rate": 0.7772705658582977,
+      "zero_cells": 0,
+      "negative_cells": 0,
+      "last_month_nonnull_skus": 566,
+      "last_month_zero_skus": 0
+    },
+    "moq": {
+      "path": "data/extracted/systeme/Systeme electric/MOQ SystemElectric.xlsx",
+      "rows_with_code": 554,
+      "unique_skus": 554,
+      "moq_column": "Кратность",
+      "positive_moq": 554,
+      "zero_moq": 0,
+      "missing_or_invalid_moq": 0,
+      "moq_median_positive": 5.0,
+      "moq_p95_positive": 25.0,
+      "moq_max": 3780.0
+    },
+    "consolidated": {
+      "path": "data/extracted/systeme/Systeme electric/Товар в пути_SystemElectric на 22.09.2026.xlsx",
+      "rows": 497,
+      "unique_skus": 497,
+      "duplicate_code_rows": 0,
+      "month_first": "2024-01-01T00:00:00",
+      "month_last": "2026-09-01T00:00:00",
+      "monthly_negative_cells": 318,
+      "monthly_zero_cells": 4243,
+      "category_counts": {
+        "3": 243,
+        "1": 124,
+        "2": 112,
+        "5": 11,
+        "7": 7
+      },
+      "cost_present": 497,
+      "cost_zero": 5,
+      "free_stock_present": 497,
+      "free_stock_negative": 0,
+      "reserved_nonzero": 96,
+      "in_transit_nonzero": 7,
+      "in_transit_units": 50160.0,
+      "average_demand_positive": 446,
+      "manual_order_nonblank": 0,
+      "growth_coeff_present": 497,
+      "seasonality_coeff_present": 497
+    },
+    "join_coverage": {
+      "union_skus": 724,
+      "all_sources_intersection_skus": 467,
+      "sources": {
+        "transactions": {
+          "skus": 565,
+          "coverage_of_union": 0.7803867403314917,
+          "missing_vs_union": 159
+        },
+        "monthly_sales": {
+          "skus": 554,
+          "coverage_of_union": 0.7651933701657458,
+          "missing_vs_union": 170
+        },
+        "inventory": {
+          "skus": 701,
+          "coverage_of_union": 0.9682320441988951,
+          "missing_vs_union": 23
+        },
+        "moq": {
+          "skus": 554,
+          "coverage_of_union": 0.7651933701657458,
+          "missing_vs_union": 170
+        },
+        "consolidated": {
+          "skus": 497,
+          "coverage_of_union": 0.68646408839779,
+          "missing_vs_union": 227
+        }
+      },
+      "pairwise_intersections": {
+        "transactions__monthly_sales": 545,
+        "transactions__inventory": 565,
+        "transactions__moq": 545,
+        "transactions__consolidated": 470,
+        "monthly_sales__inventory": 554,
+        "monthly_sales__moq": 554,
+        "monthly_sales__consolidated": 469,
+        "inventory__moq": 554,
+        "inventory__consolidated": 474,
+        "moq__consolidated": 469
+      }
+    },
+    "transaction_month_reconciliation": {
+      "comparable_cells": 6276,
+      "exact_match_cells": 2371,
+      "exact_match_rate": 0.3777884002549394,
+      "absolute_difference_units": 2906932.0,
+      "median_absolute_difference": 4.0,
+      "cells_difference_gt_1": 3572
+    }
+  }
+}
