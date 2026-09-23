@@ -91,6 +91,10 @@ def main() -> None:
     (TARGET / "index.html").write_text(html, encoding="utf-8")
     shutil.copyfile(SOURCE / "app.js", TARGET / "app.js")
     shutil.copyfile(SOURCE / "styles.css", TARGET / "styles.css")
+    if (SOURCE / "downloads").exists():
+        shutil.copytree(
+            SOURCE / "downloads", TARGET / "downloads", dirs_exist_ok=True
+        )
     shutil.copyfile(SOURCE / "data/synthetic.json", TARGET / "data/synthetic.json")
     partner_source = json.loads((SOURCE / "data/recommendations.json").read_text(encoding="utf-8"))
     partner_public = public_partner_payload(partner_source)

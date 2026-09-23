@@ -30,6 +30,13 @@
     },
     "growth_rates_clamped": 299,
     "seasonality_rates_clamped": 197,
+    "partner_questions_total": 21,
+    "partner_questions_confirmed": 0,
+    "partner_core_parameters_confirmed": false,
+    "order_budget_kzt": null,
+    "budget_overage_kzt": null,
+    "minimum_total_order_kzt": null,
+    "below_minimum_total_order": null,
     "mode": "partner",
     "source_label": "Systeme Electric · производные данные",
     "stockout_coverage_percent": 0,
@@ -59,6 +66,16 @@
       0.5,
       2.0
     ],
+    "apply_growth_coefficient": true,
+    "apply_seasonality_coefficient": true,
+    "order_budget_kzt": null,
+    "minimum_total_order_kzt": null,
+    "partner_confirmation": {
+      "answered_count": 0,
+      "question_count": 0,
+      "complete": false,
+      "core_parameters_confirmed": false
+    },
     "notes": [
       "Lead time 60 days and review period 30 days are demo assumptions.",
       "Category numbers are assumed to run from higher priority 1 to inactive 7; the partner must confirm the legend.",
@@ -67,6 +84,302 @@
       "Every calculated line remains subject to human approval and is marked as a demo result."
     ]
   },
+  "partner_questions": [
+    {
+      "id": "Q01",
+      "key": "demand_source",
+      "section": "Спрос и источники",
+      "priority": "Критично",
+      "question": "Какой источник является главным для расчета спроса по SKU?",
+      "current_answer": "Расходные накладные используются как детальная история отгрузок; месячный отчет применяется для контроля.",
+      "current_status": "Требует подтверждения",
+      "evidence": "Точные совпадения между детализацией и месячным отчетом есть только в 37,8% сопоставимых SKU-месяцев.",
+      "project_impact": "Определяет канонический ряд спроса и блокирует расчет при необъясненном расхождении источников.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q02",
+      "key": "negative_quantity_policy",
+      "section": "Спрос и источники",
+      "priority": "Критично",
+      "question": "Как трактовать отрицательное количество в продажах?",
+      "current_answer": "Отрицательные значения не увеличивают прогноз и отмечаются для проверки.",
+      "current_status": "Рабочее допущение",
+      "evidence": "В месячной истории Systeme Electric найдено 279 отрицательных значений.",
+      "project_impact": "Меняет очистку истории и расчет чистого спроса.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q03",
+      "key": "order_multiple_semantics",
+      "section": "Правила поставщика",
+      "priority": "Критично",
+      "question": "Что означает поле «Кратность» в справочнике Systeme Electric?",
+      "current_answer": "Используем как кратность округления заказа вверх.",
+      "current_status": "Требует подтверждения",
+      "evidence": "Исходный столбец называется «Кратность», а не MOQ.",
+      "project_impact": "Определяет правило округления и необходимость отдельного минимального заказа.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q04",
+      "key": "lead_time_days",
+      "section": "Правила поставщика",
+      "priority": "Критично",
+      "question": "Сколько календарных дней проходит от размещения заказа до доступности товара для продажи?",
+      "current_answer": 60,
+      "current_status": "Демо-допущение",
+      "evidence": "В переданных файлах нет подтвержденного справочника сроков поставки.",
+      "project_impact": "Напрямую меняет горизонт покрытия, целевой запас, количество и срочность заказа.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q05",
+      "key": "review_period_days",
+      "section": "Правила поставщика",
+      "priority": "Критично",
+      "question": "Как часто компания планирует пересматривать и размещать заказ Systeme Electric?",
+      "current_answer": 30,
+      "current_status": "Демо-допущение",
+      "evidence": "Принят месячный цикл только для демонстрации.",
+      "project_impact": "Добавляется к сроку поставки и меняет необходимый горизонт запаса.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q06",
+      "key": "safety_stock_category_1",
+      "section": "Страховой запас",
+      "priority": "Критично",
+      "question": "Сколько дней страхового запаса нужно для категории 1?",
+      "current_answer": 30,
+      "current_status": "Демо-допущение",
+      "evidence": "Категория 1 формирует основной объем продаж, но ее сервисная политика не передана.",
+      "project_impact": "Меняет целевой запас и заказ всех SKU категории 1.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q07",
+      "key": "safety_stock_category_2",
+      "section": "Страховой запас",
+      "priority": "Критично",
+      "question": "Сколько дней страхового запаса нужно для категории 2?",
+      "current_answer": 25,
+      "current_status": "Демо-допущение",
+      "evidence": "Политика страхового запаса не передана.",
+      "project_impact": "Меняет целевой запас и заказ всех SKU категории 2.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q08",
+      "key": "safety_stock_category_3",
+      "section": "Страховой запас",
+      "priority": "Критично",
+      "question": "Сколько дней страхового запаса нужно для категории 3?",
+      "current_answer": 20,
+      "current_status": "Демо-допущение",
+      "evidence": "Политика страхового запаса не передана.",
+      "project_impact": "Меняет целевой запас и заказ всех SKU категории 3.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q09",
+      "key": "safety_stock_category_5",
+      "section": "Страховой запас",
+      "priority": "Важно",
+      "question": "Сколько дней страхового запаса нужно для категории 5?",
+      "current_answer": 15,
+      "current_status": "Демо-допущение",
+      "evidence": "Категория 5 имеет отдельный профиль и не похожа на последовательный ABC-класс.",
+      "project_impact": "Меняет целевой запас и заказ всех SKU категории 5.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q10",
+      "key": "safety_stock_category_7",
+      "section": "Страховой запас",
+      "priority": "Важно",
+      "question": "Нужно ли поддерживать страховой запас для категории 7? Если да, сколько дней?",
+      "current_answer": 0,
+      "current_status": "Рабочее допущение",
+      "evidence": "В текущем срезе семь SKU категории 7 не имели продаж.",
+      "project_impact": "Разрешает или запрещает автоматическое пополнение категории 7.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q11",
+      "key": "category_legend",
+      "section": "Товарная политика",
+      "priority": "Критично",
+      "question": "Что означают категории 1, 2, 3, 5 и 7 и по какому правилу SKU переводится между ними?",
+      "current_answer": "1 выглядит как основной оборот, 2 и 3 — последовательно менее активные, 7 — без продаж; смысл категории 5 не установлен.",
+      "current_status": "Вывод по данным",
+      "evidence": "Категории различаются по объему продаж и запасу, но официальная легенда отсутствует.",
+      "project_impact": "Определяет политику страхового запаса, приоритет и правила для новых или выводимых SKU.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q12",
+      "key": "apply_growth_coefficient",
+      "section": "Прогноз",
+      "priority": "Важно",
+      "question": "Нужно ли применять исходный коэффициент роста к прогнозу заказа?",
+      "current_answer": "Да, только в демо и с ограничением множителя 0,75–1,50.",
+      "current_status": "Демо-допущение",
+      "evidence": "Формула источника: продажи июнь–август 2026 / июнь–август 2025 − 1.",
+      "project_impact": "Включает или отключает множитель роста без изменения исходных данных.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q13",
+      "key": "apply_seasonality_coefficient",
+      "section": "Прогноз",
+      "priority": "Важно",
+      "question": "Нужно ли применять исходный коэффициент сезонности к прогнозу заказа?",
+      "current_answer": "Да, только в демо и с ограничением множителя 0,50–2,00.",
+      "current_status": "Демо-допущение",
+      "evidence": "Формула источника: продажи сентябрь–ноябрь 2025 / июнь–август 2025 − 1.",
+      "project_impact": "Включает или отключает сезонный множитель.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q14",
+      "key": "inbound_eta_definition",
+      "section": "Остатки и поставки",
+      "priority": "Критично",
+      "question": "Что означает дата в заголовке товара в пути?",
+      "current_answer": "Дата из заголовка трактуется как ожидаемая дата доступности и учитывается внутри горизонта покрытия.",
+      "current_status": "Требует подтверждения",
+      "evidence": "Источник содержит поле «СЭ в пути 24.09», но не объясняет смысл даты.",
+      "project_impact": "Решает, можно ли уменьшать заказ на товар в пути или нужно оставить ручную проверку.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q15",
+      "key": "stock_balance_scope",
+      "section": "Остатки и поставки",
+      "priority": "Критично",
+      "question": "Какой остаток должен уменьшать потребность в закупке?",
+      "current_answer": "Остаток минус зарезервированное количество; результат сверяется с полем «Свободный остаток».",
+      "current_status": "Ответили по данным",
+      "evidence": "Для 497 SKU загружены остаток, резерв и свободный остаток; по первому SKU расчет совпадает с источником.",
+      "project_impact": "Меняет свободный запас и предотвращает двойной учет складских зон.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q16",
+      "key": "stockout_history_available",
+      "section": "Остатки и поставки",
+      "priority": "Важно",
+      "question": "Можно ли выгрузить количество дней отсутствия товара по SKU и месяцам?",
+      "current_answer": "Нет в переданном наборе.",
+      "current_status": "Ответили по данным",
+      "evidence": "История содержит месячные продажи и остатки, но не дни stockout.",
+      "project_impact": "При наличии данных восстанавливает упущенный спрос; без них каждая строка сохраняет предупреждение.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q17",
+      "key": "customer_order_pipeline_available",
+      "section": "Спрос и источники",
+      "priority": "Важно",
+      "question": "Можно ли передавать обезличенные открытые заказы, тендеры и подтвержденные проекты клиентов?",
+      "current_answer": "Нет в переданном наборе.",
+      "current_status": "Ответили по данным",
+      "evidence": "Выгрузка содержит отгрузки без идентификатора клиента и без открытого портфеля заказов.",
+      "project_impact": "Позволяет добавить подтвержденный будущий спрос и точнее выявлять разовые заказы.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q18",
+      "key": "order_budget_kzt",
+      "section": "Финансовые ограничения",
+      "priority": "Критично",
+      "question": "Какой максимальный бюджет закупки Systeme Electric доступен на один цикл?",
+      "current_answer": null,
+      "current_status": "Нет ответа",
+      "evidence": "В переданных файлах нет лимита бюджета или кредитного лимита.",
+      "project_impact": "Показывает превышение бюджета и запрещает подтверждение заказа выше лимита.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q19",
+      "key": "minimum_total_order_kzt",
+      "section": "Финансовые ограничения",
+      "priority": "Важно",
+      "question": "Есть ли минимальная общая сумма заказа поставщику?",
+      "current_answer": null,
+      "current_status": "Нет ответа",
+      "evidence": "Условие не содержится в переданных файлах.",
+      "project_impact": "Добавляет проверку минимальной суммы сформированного заказа.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q20",
+      "key": "auto_supplier_send_allowed",
+      "section": "Согласование",
+      "priority": "Критично",
+      "question": "Разрешена ли автоматическая отправка заказа поставщику?",
+      "current_answer": "Нет. Подтверждение сохраняется локально, поставщику ничего не отправляется.",
+      "current_status": "Безопасное правило проекта",
+      "evidence": "В текущем интерфейсе нет автоматической отправки поставщику.",
+      "project_impact": "Сохраняет безопасный ручной контроль и определяет будущий маршрут согласования.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    },
+    {
+      "id": "Q21",
+      "key": "approval_policy",
+      "section": "Согласование",
+      "priority": "Важно",
+      "question": "Кто утверждает заказ и при какой сумме требуется второй согласующий?",
+      "current_answer": "Менеджер может подтвердить позиции только локально; лимиты и роли не определены.",
+      "current_status": "Частичный ответ",
+      "evidence": "Проект реализует локальное подтверждение, но не содержит матрицу полномочий.",
+      "project_impact": "Формирует маршрут согласования и блокирует экспорт без нужного уровня подтверждения.",
+      "partner_answer": null,
+      "partner_comment": null,
+      "status": "awaiting_partner"
+    }
+  ],
   "recommendations": [
     {
       "sku": "030200193_",
@@ -90,7 +403,8 @@
         "stockout_uplift_units": 0.0,
         "review_reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -111,7 +425,8 @@
         "explanation": "Прогноз 51370.5 шт./мес.; горизонт 90 дн. + страховой запас 30 дн.; целевой запас 202528.6; свободный остаток 39531.0; учитываемый товар в пути 37800.0; чистая потребность 125197.6; MOQ 3780; рекомендация 128520.",
         "reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 17184409.2
@@ -720,7 +1035,8 @@
         "stockout_uplift_units": 0.0,
         "review_reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -741,7 +1057,8 @@
         "explanation": "Прогноз 102.8 шт./мес.; горизонт 90 дн. + страховой запас 30 дн.; целевой запас 405.1; свободный остаток 49.0; учитываемый товар в пути 60.0; чистая потребность 296.1; MOQ 6; рекомендация 300.",
         "reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 1064373.0
@@ -1064,7 +1381,8 @@
         "stockout_uplift_units": 0.0,
         "review_reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -1085,7 +1403,8 @@
         "explanation": "Прогноз 88.9 шт./мес.; горизонт 90 дн. + страховой запас 30 дн.; целевой запас 350.3; свободный остаток 23.0; учитываемый товар в пути 120.0; чистая потребность 207.3; MOQ 6; рекомендация 210.",
         "reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 645254.4
@@ -1405,7 +1724,8 @@
         "review_reasons": [
           "sales_history_gaps",
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -1427,7 +1747,8 @@
         "reasons": [
           "sales_history_gaps",
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 435569.39999999997
@@ -1656,7 +1977,8 @@
         "stockout_uplift_units": 0.0,
         "review_reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -1678,6 +2000,7 @@
         "reasons": [
           "stockout_data_missing",
           "demo_assumptions",
+          "inbound_eta_unconfirmed",
           "inbound_arrives_after_projected_stockout"
         ]
       },
@@ -3493,7 +3816,8 @@
         "stockout_uplift_units": 0.0,
         "review_reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -3514,7 +3838,8 @@
         "explanation": "Прогноз 28.0 шт./мес.; горизонт 90 дн. + страховой запас 20 дн.; целевой запас 101.1; свободный остаток 8.0; учитываемый товар в пути 40.0; чистая потребность 53.1; MOQ 5; рекомендация 55.",
         "reasons": [
           "stockout_data_missing",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 64176.74999999999
@@ -7997,7 +8322,8 @@
           "sales_history_gaps",
           "stockout_data_missing",
           "intermittent_demand",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "recommendation": {
@@ -8020,7 +8346,8 @@
           "sales_history_gaps",
           "stockout_data_missing",
           "intermittent_demand",
-          "demo_assumptions"
+          "demo_assumptions",
+          "inbound_eta_unconfirmed"
         ]
       },
       "order_value_demo": 0.0

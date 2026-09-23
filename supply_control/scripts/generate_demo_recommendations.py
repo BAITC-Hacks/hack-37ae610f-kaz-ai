@@ -14,6 +14,13 @@ sys.path.insert(0, str(ROOT / "src"))
 from replenishment.forecast import forecast_monthly  # noqa: E402
 from replenishment.loaders import load_systeme_snapshot  # noqa: E402
 from replenishment.models import RecommendationStatus  # noqa: E402
+from replenishment.partner_answers import (  # noqa: E402
+    answer_value,
+    apply_answers_to_scenario,
+    load_partner_answers,
+    load_questionnaire,
+    questionnaire_view,
+)
 from replenishment.reorder import calculate_recommendation  # noqa: E402
 from replenishment.scenario import DemoScenario  # noqa: E402
 
@@ -21,6 +28,8 @@ from replenishment.scenario import DemoScenario  # noqa: E402
 CONSOLIDATED = ROOT / "data/extracted/systeme/Systeme electric/Товар в пути_SystemElectric на 22.09.2026.xlsx"
 MOQ = ROOT / "data/extracted/systeme/Systeme electric/MOQ SystemElectric.xlsx"
 CONFIG = ROOT / "config/demo_systeme_assumptions.json"
+QUESTIONNAIRE = ROOT / "config/partner_questionnaire.json"
+PARTNER_ANSWERS = ROOT / "config/partner_answers.json"
 OUTPUT_JSON = ROOT / "outputs/demo/systeme_recommendations_demo.json"
 OUTPUT_MD = ROOT / "outputs/demo/systeme_recommendations_demo.md"
 AS_OF = date(2026, 9, 22)
@@ -38,7 +47,13 @@ def _money(value: float) -> str:
 
 
 def main() -> None:
-    scenario = DemoScenario.from_json(CONFIG)
+    base_config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    questionnaire = load_questionnaire(QUESTIONNAIRE)
+    partner_answers = load_partner_answers(PARTNER_ANSWERS)
+    effective_config = apply_answers_to_scenario(base_config, partner_answers)
+    scenario = DemoScenario.from_mapping(effective_config)
+    confirmation = scenario.partner_confirmation or {}
+    core_confirmed = bool(confirmation.get("core_parameters_confirmed"))
     records = load_systeme_snapshot(CONSOLIDATED, MOQ, as_of=AS_OF)
     rows: list[dict[str, Any]] = []
     status_counts: Counter[str] = Counter()
@@ -64,10 +79,21 @@ def main() -> None:
             growth_multiplier=growth_multiplier,
             seasonality_indices={AS_OF.month: seasonality_multiplier},
         )
+        scenario_reason = (
+            "partner_answers_confirmed"
+            if core_confirmed
+            else "partner_answers_partial"
+            if partner_answers
+            else "demo_assumptions"
+        )
+        extra_reasons = [scenario_reason]
+        inbound_definition = answer_value(partner_answers, "inbound_eta_definition")
+        if record.inventory.inbound and inbound_definition != "Дата доступности товара для продажи":
+            extra_reasons.append("inbound_eta_unconfirmed")
         forecast = replace(
             forecast,
             review_reasons=tuple(
-                dict.fromkeys(forecast.review_reasons + ("demo_assumptions",))
+                dict.fromkeys(forecast.review_reasons + tuple(extra_reasons))
             ),
         )
         policy = scenario.policy_for(record)
@@ -124,11 +150,33 @@ def main() -> None:
     )
     valued = [row for row in positive if row["order_value_demo"] is not None]
     total_value = sum(row["order_value_demo"] or 0 for row in valued)
+    budget = scenario.order_budget_kzt
+    minimum_total = scenario.minimum_total_order_kzt
+    budget_overage = max(0.0, total_value - budget) if budget is not None else None
+    below_minimum = (
+        total_value < minimum_total if minimum_total is not None else None
+    )
+    question_rows = questionnaire_view(questionnaire, partner_answers)
+    confirmed_questions = sum(
+        row["status"] == "partner_confirmed" for row in question_rows
+    )
+    if core_confirmed:
+        warning = (
+            "Ключевые параметры подтверждены партнёром. Строки с отсутствующими "
+            "stockout-данными всё равно требуют ручной проверки."
+        )
+    elif partner_answers:
+        warning = (
+            "Ответы партнёра применены частично. Неподтверждённые параметры остаются "
+            "демо-допущениями и требуют ручной проверки."
+        )
+    else:
+        warning = "DEMO ONLY — supplier parameters and category legend are not confirmed"
 
     summary = {
         "scenario": scenario.name,
         "as_of": AS_OF.isoformat(),
-        "warning": "DEMO ONLY — supplier parameters and category legend are not confirmed",
+        "warning": warning,
         "source_skus": len(rows),
         "positive_order_lines": len(positive),
         "zero_quantity_lines": len(rows) - len(positive) - len(blocked),
@@ -141,10 +189,18 @@ def main() -> None:
         "category_counts": dict(category_counts),
         "growth_rates_clamped": clamped_growth,
         "seasonality_rates_clamped": clamped_seasonality,
+        "partner_questions_total": len(question_rows),
+        "partner_questions_confirmed": confirmed_questions,
+        "partner_core_parameters_confirmed": core_confirmed,
+        "order_budget_kzt": budget,
+        "budget_overage_kzt": budget_overage,
+        "minimum_total_order_kzt": minimum_total,
+        "below_minimum_total_order": below_minimum,
     }
     payload = {
         "summary": summary,
         "assumptions": asdict(scenario),
+        "partner_questions": question_rows,
         "recommendations": rows,
     }
     OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
@@ -156,7 +212,7 @@ def main() -> None:
     lines = [
         "# Демо-рекомендации по заказу Systeme Electric",
         "",
-        "> **ДЕМО.** Срок поставки, страховой запас и трактовка категорий не подтверждены партнёром. Не отправлять поставщику.",
+        f"> {warning}",
         "",
         "## Сводка",
         "",
@@ -167,12 +223,15 @@ def main() -> None:
         f"- Оценочная стоимость: {_money(total_value)} ₸ по {len(valued)} строкам с ценой",
         f"- Ограничен коэффициент роста: {clamped_growth} SKU",
         f"- Ограничен коэффициент сезонности: {clamped_seasonality} SKU",
+        f"- Вопросов подтверждено партнёром: {confirmed_questions} из {len(question_rows)}",
+        f"- Бюджет заказа: {_money(budget)} ₸" if budget is not None else "- Бюджет заказа: не подтверждён",
+        f"- Превышение бюджета: {_money(budget_overage or 0)} ₸" if budget is not None else "- Превышение бюджета: не рассчитывается",
         "",
         "Все незаблокированные строки имеют статус `review_required`: отсутствуют подтверждённые stockout-данные и применены демо-допущения.",
         "",
         "## Топ-30 рекомендаций",
         "",
-        "| Срочность | SKU | Категория | Наименование | Кол-во | MOQ | Стоимость, ₸ |",
+        "| Срочность | SKU | Категория | Наименование | Кол-во | Кратность | Стоимость, ₸ |",
         "|---|---|---:|---|---:|---:|---:|",
     ]
     for row in positive[:30]:
@@ -192,13 +251,15 @@ def main() -> None:
     lines.extend(
         [
             "",
-            "## Демо-допущения",
+            "## Применённые параметры",
             "",
             f"- Срок поставки: {scenario.lead_time_days} дней",
             f"- Период пересмотра: {scenario.review_period_days} дней",
             f"- Страховой запас по категориям: {dict(scenario.category_safety_stock_days)}",
             f"- Ограничение множителя роста: {scenario.growth_multiplier_bounds}",
             f"- Ограничение множителя сезонности: {scenario.seasonality_multiplier_bounds}",
+            f"- Коэффициент роста включён: {'да' if scenario.apply_growth_coefficient else 'нет'}",
+            f"- Коэффициент сезонности включён: {'да' if scenario.apply_seasonality_coefficient else 'нет'}",
             "",
         ]
     )
@@ -208,4 +269,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

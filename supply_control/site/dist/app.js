@@ -31,6 +31,9 @@ const reasonLabels = {
   one_off_excluded: "Разовый крупный заказ исключён",
   customer_level_outlier: "Выброс подтверждён на уровне клиента",
   stockout_compensated: "Упущенный спрос восстановлен",
+  partner_answers_partial: "Ответы партнёра применены частично",
+  partner_answers_confirmed: "Ключевые параметры подтверждены партнёром",
+  inbound_eta_unconfirmed: "Смысл даты товара в пути не подтверждён",
   "Дефицит оценён по нулевому начальному остатку": "Дефицит оценён по нулевому начальному остатку",
 };
 
@@ -49,6 +52,7 @@ function cacheElements() {
     "prev-page", "next-page", "assumption-list", "detail-dialog", "detail-title", "detail-content", "approval-dialog",
     "approval-copy", "confirm-button", "file-input", "toast", "scenario-link", "dataset-mode", "source-name",
     "source-date", "source-count", "data-badge", "warning-title", "warning-copy",
+    "partner-questions", "question-count", "question-confirmed", "questions-body", "questionnaire-download",
   ].forEach((id) => { elements[id] = document.getElementById(id); });
 }
 
@@ -76,6 +80,7 @@ function setPayload(payload, mode = state.mode) {
   renderSource();
   renderSummary();
   renderQuality();
+  renderPartnerQuestions();
   renderProofs();
   renderAssumptions();
   applyFilters();
@@ -141,6 +146,33 @@ function renderProofs() {
       <div><strong>${escapeHtml(proof.title)}</strong><p>${escapeHtml(proof.evidence)}</p></div>
       <b>${proof.status === "passed" ? "Пройдено" : "Проверить"}</b>
     </article>`).join("");
+}
+
+function displayAnswer(value) {
+  if (value === true) return "Да";
+  if (value === false) return "Нет";
+  if (value == null || value === "") return "—";
+  return String(value);
+}
+
+function renderPartnerQuestions() {
+  const questions = state.payload.partner_questions || [];
+  elements["partner-questions"].hidden = questions.length === 0;
+  if (!questions.length) return;
+  const confirmed = questions.filter((row) => row.status === "partner_confirmed").length;
+  elements["question-confirmed"].textContent = formatNumber.format(confirmed);
+  elements["question-count"].textContent = formatNumber.format(questions.length);
+  elements["questions-body"].innerHTML = questions.map((row) => {
+    const status = row.status === "partner_confirmed" ? "Подтверждено партнёром" : row.current_status || "Ожидает ответа";
+    return `<tr>
+      <td><span class="priority-tag ${row.priority === "Критично" ? "critical" : "important"}">${escapeHtml(row.priority)}</span></td>
+      <td class="question-cell"><strong>${escapeHtml(row.id)}</strong><span>${escapeHtml(row.question)}</span></td>
+      <td>${escapeHtml(displayAnswer(row.current_answer))}<small>${escapeHtml(row.evidence || "")}</small></td>
+      <td><span class="answer-status ${row.status === "partner_confirmed" ? "confirmed" : "pending"}">${escapeHtml(status)}</span></td>
+      <td>${row.partner_answer == null ? '<span class="muted-answer">Ожидается</span>' : `<strong>${escapeHtml(displayAnswer(row.partner_answer))}</strong>`}</td>
+      <td>${escapeHtml(row.project_impact || "—")}</td>
+    </tr>`;
+  }).join("");
 }
 
 function renderAssumptions() {
@@ -241,7 +273,7 @@ function openDetail(sku) {
     ["Целевой запас", rec.target_stock == null ? "—" : formatNumber.format(rec.target_stock)],
     ["Свободный остаток", rec.free_stock == null ? "—" : formatNumber.format(rec.free_stock)],
     ["В пути учтено", formatNumber.format(rec.eligible_inbound || 0)],
-    ["MOQ", rec.moq == null ? "—" : formatNumber.format(rec.moq)],
+    ["Кратность", rec.moq == null ? "—" : formatNumber.format(rec.moq)],
   ];
   const audit = [];
   if (rec.excluded_outliers) audit.push(`Исключено разовых заказов: ${formatNumber.format(rec.excluded_outliers)}`);
@@ -260,11 +292,31 @@ function openApproval() {
   const quantity = rows.reduce((sum, row) => sum + rowQuantity(row), 0);
   const value = rows.reduce((sum, row) => sum + rowValue(row), 0);
   const valueText = value ? `, оценочная стоимость ${formatMoney.format(value)}` : "";
+  const budget = Number(state.payload.summary.order_budget_kzt);
+  const minimum = Number(state.payload.summary.minimum_total_order_kzt);
+  if (Number.isFinite(budget) && budget > 0 && value > budget) {
+    showToast(`Выбранный заказ превышает бюджет на ${formatMoney.format(value - budget)}.`);
+    return;
+  }
+  if (Number.isFinite(minimum) && minimum > 0 && value < minimum) {
+    showToast(`Сумма заказа ниже минимальной на ${formatMoney.format(minimum - value)}.`);
+    return;
+  }
   elements["approval-copy"].textContent = `${rows.length} позиций, ${formatNumber.format(quantity)} единиц${valueText}.`;
   elements["approval-dialog"].showModal();
 }
 
 function confirmSelection() {
+  const selectedRows = state.rows.filter((row) => state.selected.has(row.sku));
+  const selectedValue = selectedRows.reduce((sum, row) => sum + rowValue(row), 0);
+  const budget = Number(state.payload.summary.order_budget_kzt);
+  const minimum = Number(state.payload.summary.minimum_total_order_kzt);
+  if (Number.isFinite(budget) && budget > 0 && selectedValue > budget) {
+    throw new Error(`Выбранный заказ превышает бюджет на ${formatMoney.format(selectedValue - budget)}`);
+  }
+  if (Number.isFinite(minimum) && minimum > 0 && selectedValue < minimum) {
+    throw new Error(`Сумма заказа ниже минимальной на ${formatMoney.format(minimum - selectedValue)}`);
+  }
   state.selected.forEach((sku) => {
     const row = state.rows.find((item) => item.sku === sku);
     if (row) state.approved.add(approvalKey(row));
@@ -287,7 +339,7 @@ function csvCell(value) {
 function exportApproved() {
   const rows = state.rows.filter((row) => state.approved.has(approvalKey(row)));
   if (!rows.length) return;
-  const header = ["SKU", "Артикул поставщика", "Наименование", "Поставщик", "Количество", "MOQ", "Срочность", "Стоимость KZT", "Статус"];
+  const header = ["SKU", "Артикул поставщика", "Наименование", "Поставщик", "Количество", "Кратность", "Срочность", "Стоимость KZT", "Статус"];
   const body = rows.map((row) => [
     row.sku, row.supplier_sku, row.name, row.supplier, row.recommendation.recommended_quantity,
     row.recommendation.moq, row.recommendation.urgency, row.order_value_demo, "Подтверждено менеджером",

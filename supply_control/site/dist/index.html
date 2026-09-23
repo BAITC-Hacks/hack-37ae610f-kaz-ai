@@ -19,7 +19,8 @@
         <nav class="nav-list">
           <a class="nav-item active" href="#recommendations"><span>01</span> Рекомендации</a>
           <a class="nav-item" href="#data-quality"><span>02</span> Качество данных</a>
-          <a class="nav-item" href="#scenario"><span>03</span> Сценарий</a>
+          <a class="nav-item" href="#partner-questions"><span>03</span> Вопросы партнёру</a>
+          <a class="nav-item" href="#scenario"><span>04</span> Сценарий</a>
         </nav>
 
         <section class="sidebar-status" aria-labelledby="source-title">
@@ -53,6 +54,7 @@
               <input id="file-input" type="file" accept="application/json,.json" />
               Загрузить расчёт
             </label>
+            <a class="button secondary" id="questionnaire-download" href="./downloads/Электрокомплект_вопросы_для_проекта.xlsx" download>Скачать вопросы</a>
             <button class="button secondary" id="export-button" type="button" disabled>Экспорт подтверждённых</button>
           </div>
         </header>
@@ -96,6 +98,35 @@
             <div class="quality-item"><span id="quality-b-label">MOQ</span><strong id="quality-b">—</strong><small id="quality-b-note">покрытие справочника</small></div>
             <div class="quality-item"><span id="quality-c-label">Ошибка прогноза</span><strong id="quality-c">—</strong><small id="quality-c-note">rolling backtest</small></div>
             <div class="quality-item"><span id="quality-d-label">Систематическое смещение</span><strong id="quality-d">—</strong><small id="quality-d-note">bias прогноза</small></div>
+          </div>
+        </section>
+
+        <section class="question-panel" id="partner-questions" aria-labelledby="questions-title">
+          <div class="question-heading">
+            <div>
+              <p class="eyebrow">Входные параметры проекта</p>
+              <h2 id="questions-title">Что мы выяснили и что должен подтвердить партнёр</h2>
+              <p>Наш ответ не заменяет подтверждение «Электрокомплекта». После импорта заполненного файла подтверждённые параметры пересчитывают рекомендации.</p>
+            </div>
+            <div class="question-summary">
+              <strong id="question-confirmed">0</strong>
+              <span>подтверждено из <b id="question-count">0</b></span>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="questions-table">
+              <thead>
+                <tr>
+                  <th>Приоритет</th>
+                  <th>Вопрос</th>
+                  <th>Наш текущий ответ</th>
+                  <th>Статус</th>
+                  <th>Ответ партнёра</th>
+                  <th>Что изменится</th>
+                </tr>
+              </thead>
+              <tbody id="questions-body"></tbody>
+            </table>
           </div>
         </section>
 

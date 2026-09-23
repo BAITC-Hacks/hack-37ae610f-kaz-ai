@@ -10,15 +10,16 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN_CANDIDATES = (ROOT.parent, ROOT / "integration_main")
+CANONICAL_KAZ_AI_AVAILABLE = False
 for candidate in MAIN_CANDIDATES:
     if (candidate / "kaz_ai").is_dir():
         sys.path.insert(0, str(candidate))
+        CANONICAL_KAZ_AI_AVAILABLE = True
         break
-else:
-    raise RuntimeError("Canonical kaz_ai package was not found")
 
-from kaz_ai.demo import demo_products  # noqa: E402
-from kaz_ai.engine import ForecastSettings, recommend_all  # noqa: E402
+if CANONICAL_KAZ_AI_AVAILABLE:
+    from kaz_ai.demo import demo_products  # noqa: E402
+    from kaz_ai.engine import ForecastSettings, recommend_all  # noqa: E402
 
 
 AS_OF = date(2026, 9, 22)
@@ -28,6 +29,12 @@ SYNTHETIC_DATA = ROOT / "site/dist/data/synthetic.json"
 
 
 def _synthetic_payload() -> dict[str, Any]:
+    if not CANONICAL_KAZ_AI_AVAILABLE:
+        if SYNTHETIC_DATA.exists():
+            return json.loads(SYNTHETIC_DATA.read_text(encoding="utf-8"))
+        raise RuntimeError(
+            "Canonical kaz_ai package was not found and no verified synthetic snapshot is available"
+        )
     products = demo_products(AS_OF)
     rows = recommend_all(products, ForecastSettings(AS_OF, 30))
     by_code = {product.code: product for product in products}

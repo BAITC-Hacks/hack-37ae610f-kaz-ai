@@ -60,11 +60,11 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .main-content { min-width: 0; padding: 30px clamp(18px, 3vw, 48px) 70px; }
 .topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
-.topbar h1, .workspace-heading h2, .quality-panel h2, .scenario-panel h2 { margin: 4px 0 0; color: var(--navy); letter-spacing: -0.025em; }
+.topbar h1, .workspace-heading h2, .quality-panel h2, .scenario-panel h2, .question-panel h2 { margin: 4px 0 0; color: var(--navy); letter-spacing: -0.025em; }
 .topbar h1 { font-size: clamp(1.7rem, 3vw, 2.45rem); }
 .eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.14em; color: var(--blue-2); font-size: 0.7rem; font-weight: 800; }
 .sidebar .eyebrow { color: rgba(255, 255, 255, 0.56); }
-.topbar-actions { display: flex; gap: 10px; align-items: flex-end; }
+.topbar-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: flex-end; }
 .mode-control { display: grid; gap: 5px; }
 .mode-control span { color: var(--muted); font-size: 0.68rem; font-weight: 700; }
 .mode-control select {
@@ -79,6 +79,7 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
 .button.primary:hover:not(:disabled) { background: #ffc629; }
 .button.secondary { border-color: var(--line); background: var(--surface); color: var(--navy); }
 .button.secondary:hover:not(:disabled) { border-color: var(--blue-2); background: var(--surface-3); }
+.topbar-actions a.button { text-decoration: none; }
 .file-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; overflow: hidden; }
 
 .warning-banner {
@@ -108,6 +109,32 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
 .quality-item strong { margin-top: 8px; font-size: 1.2rem; }
 .quality-item small { color: #7b8991; margin-top: 3px; font-size: 0.68rem; }
 .quality-item .bad { color: var(--red); }
+
+.question-panel { margin-top: 18px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-soft); overflow: hidden; }
+.question-heading { padding: 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.question-heading h2 { font-size: 1.18rem; }
+.question-heading p:not(.eyebrow) { max-width: 760px; margin: 9px 0 0; color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+.question-summary { min-width: 140px; padding: 13px 15px; border-left: 3px solid var(--blue); background: var(--surface-3); }
+.question-summary strong, .question-summary span { display: block; }
+.question-summary strong { color: var(--navy); font-size: 1.55rem; }
+.question-summary span { margin-top: 4px; color: var(--muted); font-size: 0.72rem; }
+.questions-table { min-width: 1280px; border-top: 1px solid var(--line-soft); }
+.questions-table th:nth-child(1) { width: 95px; }
+.questions-table th:nth-child(2) { width: 260px; }
+.questions-table th:nth-child(3) { width: 260px; }
+.questions-table th:nth-child(4) { width: 145px; }
+.questions-table th:nth-child(5) { width: 150px; }
+.questions-table td { vertical-align: top; line-height: 1.4; }
+.questions-table td small { display: block; margin-top: 7px; color: var(--muted); font-size: 0.68rem; }
+.question-cell strong, .question-cell span { display: block; }
+.question-cell strong { color: var(--blue-2); font-size: 0.68rem; }
+.question-cell span { margin-top: 5px; color: #2f3f48; font-weight: 700; }
+.priority-tag, .answer-status { display: inline-flex; border-radius: 4px; padding: 4px 7px; font-size: 0.65rem; font-weight: 800; }
+.priority-tag.critical { color: #a42d2d; background: #fdecec; }
+.priority-tag.important { color: #765800; background: #fff4d5; }
+.answer-status.confirmed { color: #176545; background: #e7f6ef; }
+.answer-status.pending { color: #765800; background: #fff4d5; }
+.muted-answer { color: var(--muted); }
 
 .proof-panel { margin-top: 18px; padding: 22px; border-radius: 8px; background: var(--surface); border: 1px solid #b8ddcf; }
 .proof-panel h2 { margin: 4px 0 0; font-size: 1.12rem; letter-spacing: -0.035em; }
@@ -216,6 +243,7 @@ dialog::backdrop { background: rgba(11, 42, 60, 0.55); backdrop-filter: blur(3px
   .toolbar { grid-template-columns: 1fr 1fr; }
   .search-field { grid-column: 1 / -1; }
   .workspace-heading { align-items: flex-start; flex-direction: column; }
+  .question-heading { flex-direction: column; }
   .selection-summary { width: 100%; justify-content: space-between; }
   .assumption-list { grid-template-columns: repeat(2, 1fr); }
   .proof-grid { grid-template-columns: repeat(2, 1fr); }
