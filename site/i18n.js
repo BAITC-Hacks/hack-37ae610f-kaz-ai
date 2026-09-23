@@ -30,7 +30,7 @@ window.KazI18n = {
     urgencyHigh: 'Высокая', urgencyNormal: 'Обычная', urgencyMissing: 'Нужны данные', pagination: '{first}–{last} из {total}',
     selectionCount: '{count} {word} {verb}', selectedOne: 'выбрана', selectedMany: 'выбрано', positionOne: 'позиция', positionFew: 'позиции', positionMany: 'позиций',
     stockPrompt: 'Введите свободный остаток на дату среза', stockSaved: 'Остаток сохранён. Рекомендация пересчитана.',
-    approvedNotice: '{count} {word} утверждено. CSV доступен для выгрузки.', requestError: 'Ошибка {status}', insufficientHistory: 'Недостаточно истории продаж',
+    approvedNotice: '{count} {word} утверждено. CSV доступен для выгрузки.', requestError: 'Ошибка {status}', insufficientHistory: 'Недостаточно истории продаж', partnerBlockedReason: 'Предварительный прогноз: {forecast}. Заказ заблокирован до подтверждения срока поставки, страхового запаса и кратности.',
     reasonKnown: 'Спрос на {days} дн.: {forecast}; свободный остаток: {stock}; ',
     reasonUnknown: 'Спрос на {days} дн.: {forecast}; текущий остаток не предоставлен; ',
     reasonSettings: 'покрытие: {coverage} дн.; срок поставки: {lead} дн.; страховой запас: {safety} дн. (+{extra} к спросу); в пути до {date}: {inbound}; рост: {growth}; кратность: {moq}.',
@@ -39,7 +39,7 @@ window.KazI18n = {
     reasonImputed: ' Восстановлено спроса при дефиците: {imputed}.',
     flagSalesMismatch: 'Детальные и месячные продажи расходятся', flagEstimatedStockout: 'Дефицит оценён по нулевому начальному остатку',
     flagOldStock: 'Остаток не на дату расчёта', flagNegativeStock: 'Отрицательный остаток учтён как ноль',
-    flagNoLead: 'Срок поставки не задан; использован только выбранный горизонт', flagManualStock: 'Остаток внесён вручную',
+    flagNoLead: 'Срок поставки не задан; использован только выбранный горизонт', flagManualStock: 'Остаток внесён вручную', flagUnconfirmedTerms: 'Параметры заказа не подтверждены',
   },
   kk: {
     pageTitle: 'KAZ-AI — сатып алу ұсыныстары', brandSub: '/ сатып алу', forCustomer: 'Тапсырыс беруші:', customerSite: 'Электрокомплект компаниялар тобы — тапсырыс берушінің сайты', settings: 'Баптаулар', language: 'Интерфейс тілі',
@@ -71,7 +71,7 @@ window.KazI18n = {
     urgencyHigh: 'Жоғары', urgencyNormal: 'Қалыпты', urgencyMissing: 'Дерек қажет', pagination: '{first}–{last} / {total}',
     selectionCount: '{count} тауар таңдалды', selectedOne: 'таңдалды', selectedMany: 'таңдалды', positionOne: 'тауар', positionFew: 'тауар', positionMany: 'тауар',
     stockPrompt: 'Кесінді күніндегі қолда бар қалдықты енгізіңіз', stockSaved: 'Қалдық сақталды. Ұсыныс қайта есептелді.',
-    approvedNotice: '{count} тауар бекітілді. CSV жүктеуге дайын.', requestError: 'Қате {status}', insufficientHistory: 'Сатылым тарихы жеткіліксіз',
+    approvedNotice: '{count} тауар бекітілді. CSV жүктеуге дайын.', requestError: 'Қате {status}', insufficientHistory: 'Сатылым тарихы жеткіліксіз', partnerBlockedReason: 'Алдын ала болжам: {forecast}. Жеткізу мерзімі, сақтандыру қоры және тапсырыс еселігі расталғанша тапсырыс бұғатталған.',
     reasonKnown: '{days} күндік сұраныс: {forecast}; қолда бар қалдық: {stock}; ',
     reasonUnknown: '{days} күндік сұраныс: {forecast}; ағымдағы қалдық көрсетілмеген; ',
     reasonSettings: 'қамту: {coverage} күн; жеткізу мерзімі: {lead} күн; сақтандыру қоры: {safety} күн (сұранысқа +{extra}); {date} дейін жолда: {inbound}; өсім: {growth}; еселік: {moq}.',
@@ -80,7 +80,7 @@ window.KazI18n = {
     reasonImputed: ' Тапшылық кезіндегі сұраныс қалпына келтірілді: {imputed}.',
     flagSalesMismatch: 'Егжей-тегжейлі және айлық сатылымдар сәйкес келмейді', flagEstimatedStockout: 'Тапшылық бастапқы нөлдік қалдық бойынша бағаланды',
     flagOldStock: 'Қалдық есептеу күніне сай емес', flagNegativeStock: 'Теріс қалдық нөл деп алынды',
-    flagNoLead: 'Жеткізу мерзімі жоқ; тек таңдалған қамту қолданылды', flagManualStock: 'Қалдық қолмен енгізілді',
+    flagNoLead: 'Жеткізу мерзімі жоқ; тек таңдалған қамту қолданылды', flagManualStock: 'Қалдық қолмен енгізілді', flagUnconfirmedTerms: 'Тапсырыс параметрлері расталмаған',
   },
   demo: {
     suppliers: {

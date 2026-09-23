@@ -46,16 +46,28 @@ class AppState:
                     product.free_stock = float(value)
                     product.stock_as_of = self.as_of
                     product.warnings.append("Остаток внесён вручную")
-        if storage.exists():
+        if storage.exists() and report.get("mode") != "partner":
             saved = json.loads(storage.read_text(encoding="utf-8"))
             self.approved = {str(k): v for k, v in saved.items() if isinstance(v, dict)}
 
     def rows(self, days: int) -> list[dict]:
         if days not in self.cache:
-            self.cache[days] = recommend_all(self.products, ForecastSettings(self.as_of, days))
+            rows = recommend_all(self.products, ForecastSettings(self.as_of, days))
+            if self.report.get("mode") == "partner":
+                # Archive exports do not confirm lead times or safety-stock policy.
+                # Show demand forecasts, but block unverified purchase quantities.
+                for row in rows:
+                    row["quantity"] = None
+                    if row["status"] == "ready":
+                        row["status"] = "review_required"
+                    row["flags"] = list(dict.fromkeys([*row["flags"], "Параметры заказа не подтверждены"]))
+                    row["reason"] = "Предварительный прогноз. Заказ заблокирован до подтверждения срока поставки, страхового запаса и кратности заказа. " + row["reason"]
+            self.cache[days] = rows
         return self.cache[days]
 
     def approve(self, items: list[dict], days: int) -> int:
+        if self.report.get("mode") == "partner":
+            raise ValueError("Заказ по данным партнёра заблокирован до подтверждения параметров закупки")
         available = {(r["supplier"], r["code"]): r for r in self.rows(days)}
         prepared: list[tuple[str, dict]] = []
         seen: set[str] = set()
@@ -157,6 +169,8 @@ class AppState:
                                  "previous_stock": previous, "new_stock": number}])
 
     def export_csv(self, supplier: str | None = None) -> bytes:
+        if self.report.get("mode") == "partner":
+            raise ValueError("Экспорт заказа по данным партнёра заблокирован до подтверждения параметров закупки")
         output = io.StringIO()
         writer = csv.writer(output, delimiter=";")
         writer.writerow(["Поставщик", "Код 1С", "Наименование", "Количество", "Рекомендация", "Дата среза", "Горизонт, дни", "Обоснование"])

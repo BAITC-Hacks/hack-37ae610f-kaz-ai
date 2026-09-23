@@ -22,11 +22,13 @@ const flagKeys = {
   'Отрицательный остаток учтён как ноль': 'flagNegativeStock',
   'Срок поставки не задан; использован только выбранный горизонт': 'flagNoLead',
   'Остаток внесён вручную': 'flagManualStock',
+  'Параметры заказа не подтверждены': 'flagUnconfirmedTerms',
 };
 const displayFlag = (flag) => flagKeys[flag] ? t(flagKeys[flag]) : flag;
 
 function localizedReason(row) {
   if (language === 'ru') return row.reason || '';
+  if (state.meta?.mode === 'partner' && row.status === 'review_required') return t('partnerBlockedReason', { forecast: fmt.format(row.forecast) });
   if (row.status === 'insufficient_history') return t('insufficientHistory');
   const stock = row.free_stock;
   const date = new Date(`${state.meta.as_of}T12:00:00`);
@@ -152,7 +154,7 @@ function renderRows() {
       const selected = state.selected.get(key(row));
       const quantity = selected?.quantity ?? row.quantity;
       const ready = row.status === 'ready' && (row.quantity || 0) > 0;
-      const urgency = row.urgency === 'высокая' ? ['badge-high', t('urgencyHigh')] : row.status === 'ready' ? ['badge-normal', t('urgencyNormal')] : ['badge-missing', t('urgencyMissing')];
+      const urgency = row.status !== 'ready' ? ['badge-missing', t('urgencyMissing')] : row.urgency === 'высокая' ? ['badge-high', t('urgencyHigh')] : ['badge-normal', t('urgencyNormal')];
       return `<tr data-key="${esc(key(row))}">
         <td><input class="row-check" type="checkbox" ${selected ? 'checked' : ''} ${ready ? '' : 'disabled'} aria-label="${esc(t('selectItem', { code: row.code }))}"></td>
         <td><div class="item-name">${esc(displayProduct(row))}<span class="item-code">${esc(row.code)} · ${esc(t('categoryRow', { category: displayCategory(row.category || '—') }))}</span></div>
@@ -212,6 +214,7 @@ async function init() {
   state.approvedCount = state.meta.approved_count;
   renderMeta();
   if (page === 'recommendations') {
+    if (state.meta.mode === 'partner') $('ordersOnly').checked = false;
     const supplier = new URLSearchParams(location.search).get('supplier');
     if (supplier && state.meta.suppliers.includes(supplier)) $('supplier').value = supplier;
     await loadRows();
