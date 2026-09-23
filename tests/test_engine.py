@@ -3,6 +3,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
+from kaz_ai.demo import demo_products
 from kaz_ai.engine import Arrival, ForecastSettings, Product, Sale, recommend, recommend_all
 from kaz_ai.server import AppState
 
@@ -90,10 +91,25 @@ class ReplenishmentAcceptanceTests(unittest.TestCase):
         baseline = run(product())["quantity"]
         values = months()
         values["2025-05"] += 1000
-        spike = product(monthly_sales=values, sales=[Sale("2025-05", 1000, "INV-1", "anon-1")])
+        regular = [Sale("2025-05", 25, f"REG-{i}", f"DEMO-C{i:03d}") for i in range(4)]
+        one_customer = [Sale("2025-05", 100, f"BIG-{i}", "DEMO-C017") for i in range(10)]
+        spike = product(monthly_sales=values, sales=regular + one_customer)
         result = run(spike)
         self.assertGreater(result["excluded_outliers"], 900)
+        self.assertEqual(result["excluded_customers"], {"DEMO-C017": 1000.0})
         self.assertLessEqual(result["quantity"], baseline + 5)
+
+    def test_synthetic_sales_have_customer_ids_and_reconcile(self):
+        products = demo_products()
+        self.assertEqual(len(products), 12)
+        for item in products:
+            self.assertTrue(all(sale.customer_id for sale in item.sales))
+            for month, quantity in item.monthly_sales.items():
+                self.assertEqual(sum(sale.quantity for sale in item.sales if sale.month == month), quantity)
+        cable = next(item for item in products if item.code == "DEMO-A202")
+        result = run(cable)
+        self.assertEqual(result["excluded_customers"], {"DEMO-C017": 900.0})
+        self.assertIn("DEMO-C017", result["reason"])
 
     def test_supplier_grouping_reason_moq_and_missing_stock(self):
         a = product(moq=10)

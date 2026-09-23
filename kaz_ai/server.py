@@ -184,6 +184,22 @@ class Handler(BaseHTTPRequestHandler):
         if path.path == "/api/approved":
             self._json({"items": list(self.state.approved.values())})
             return
+        if path.path == "/api/synthetic-sales.csv":
+            if self.state.report.get("mode") != "synthetic":
+                self._json({"error": "Доступно только для синтетического набора"}, 404)
+                return
+            output = io.StringIO()
+            writer = csv.writer(output, delimiter=";")
+            writer.writerow(["Поставщик", "Артикул", "Месяц", "Документ", "ID клиента", "Количество"])
+            for product in self.state.products:
+                for sale in product.sales:
+                    writer.writerow([_csv_text(value) for value in (
+                        product.supplier, product.code, sale.month, sale.document,
+                        sale.customer_id, sale.quantity
+                    )])
+            self._send(("\ufeff" + output.getvalue()).encode("utf-8"), "text/csv; charset=utf-8",
+                       disposition='attachment; filename="synthetic_customer_sales.csv"')
+            return
         if path.path == "/api/export.csv":
             if not self.state.approved:
                 self._json({"error": "Нет утверждённых позиций"}, 400)

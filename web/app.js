@@ -25,6 +25,8 @@ function renderMeta() {
   const meta = state.meta;
   $('asOf').textContent = new Date(`${meta.as_of}T12:00:00`).toLocaleDateString('ru-RU');
   $('sourceMode').textContent = meta.mode === 'synthetic' ? 'Синтетический пример' : 'Выгрузки партнёра';
+  $('salesLink').hidden = meta.mode !== 'synthetic';
+  if (meta.mode === 'synthetic') $('salesLink').textContent = `${fmt.format(meta.transactions)} продаж · ${fmt.format(meta.customers)} ID клиентов ↗`;
   $('supplier').innerHTML = '<option value="">Все поставщики</option>' + meta.suppliers.map((name) => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
   $('category').innerHTML = '<option value="">Все категории</option>' + (meta.categories || []).map((name) => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
   $('approvedCount').textContent = fmt.format(state.approvedCount);

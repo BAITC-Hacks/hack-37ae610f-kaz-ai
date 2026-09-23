@@ -7,7 +7,6 @@ from pathlib import Path
 
 from .demo import demo_products
 from .server import serve
-from .source import load_archives
 
 
 def main() -> None:
@@ -19,6 +18,8 @@ def main() -> None:
     args = parser.parse_args()
     paths = [p for p in (args.iek, args.systeme) if p is not None]
     if paths:
+        from .source import load_archives
+
         products, report = load_archives(paths, args.as_of)
         report["mode"] = "partner"
         digest = hashlib.sha256()
@@ -29,9 +30,12 @@ def main() -> None:
         digest.update(args.as_of.isoformat().encode())
         report["dataset_id"] = digest.hexdigest()[:12]
     else:
-        products = demo_products()
+        products = demo_products(args.as_of)
+        customers = {sale.customer_id for product in products for sale in product.sales if sale.customer_id}
         report = {"mode": "synthetic", "as_of": args.as_of.isoformat(), "archives": ["Синтетический пример"],
-                  "products": len(products), "ready_stock": len(products), "warnings": [], "files": []}
+                  "products": len(products), "ready_stock": sum(p.free_stock is not None for p in products),
+                  "customers": len(customers), "transactions": sum(len(p.sales) for p in products),
+                  "dataset_id": f"synthetic-v2-{args.as_of.isoformat()}", "warnings": [], "files": []}
     serve(products, report, args.port)
 
 

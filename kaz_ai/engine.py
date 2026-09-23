@@ -76,13 +76,14 @@ def _neighbor_baseline(series: dict[str, float], month: str) -> float:
     return _median(neighbors)
 
 
-def clean_demand(product: Product, as_of: date) -> tuple[dict[str, float], dict[str, float], dict[str, float], list[str]]:
-    """Return adjusted monthly demand, excluded spikes, imputed stockout demand and flags."""
+def clean_demand(product: Product, as_of: date) -> tuple[dict[str, float], dict[str, float], dict[str, float], list[str], dict[str, float]]:
+    """Return adjusted demand, excluded spikes, stockout demand, flags and excluded clients."""
     months = _closed_months(product.monthly_sales, as_of)
     raw = {m: max(0.0, float(product.monthly_sales[m])) for m in months}
     adjusted = dict(raw)
     excluded: dict[str, float] = defaultdict(float)
     imputed: dict[str, float] = defaultdict(float)
+    excluded_clients: dict[str, float] = defaultdict(float)
     flags: list[str] = []
 
     # One-off order detection uses an anonymized customer where supplied, or a
@@ -91,15 +92,15 @@ def clean_demand(product: Product, as_of: date) -> tuple[dict[str, float], dict[
     typical = _median(positive)
     deviation = _median([abs(q - typical) for q in positive])
     order_threshold = max(20.0, 5 * typical, typical + 6 * deviation)
-    grouped: dict[tuple[str, str], float] = defaultdict(float)
+    grouped: dict[tuple[str, str, str], float] = defaultdict(float)
     detail_total: dict[str, float] = defaultdict(float)
     for sale in product.sales:
         if sale.month not in raw or sale.quantity <= 0:
             continue
-        key = sale.customer_id or sale.document
-        grouped[(sale.month, key)] += sale.quantity
+        group_type = "customer" if sale.customer_id else "document"
+        grouped[(sale.month, group_type, sale.customer_id or sale.document)] += sale.quantity
         detail_total[sale.month] += sale.quantity
-    for (month, _), quantity in grouped.items():
+    for (month, group_type, identifier), quantity in grouped.items():
         if quantity < order_threshold or quantity < raw[month] * 0.45:
             continue
         # Avoid subtracting from a monthly series that does not reconcile to
@@ -114,6 +115,8 @@ def clean_demand(product: Product, as_of: date) -> tuple[dict[str, float], dict[
         removed = min(quantity, adjusted[month])
         adjusted[month] -= removed
         excluded[month] += removed
+        if group_type == "customer":
+            excluded_clients[identifier] += removed
 
     # Monthly spikes catch large anonymous orders when customer IDs are absent.
     for month in months:
@@ -146,7 +149,7 @@ def clean_demand(product: Product, as_of: date) -> tuple[dict[str, float], dict[
                 adjusted[month] = peer
                 if "Дефицит оценён по нулевому начальному остатку" not in flags:
                     flags.append("Дефицит оценён по нулевому начальному остатку")
-    return adjusted, dict(excluded), dict(imputed), flags
+    return adjusted, dict(excluded), dict(imputed), flags, dict(excluded_clients)
 
 
 def _seasonal_index(series: dict[str, float]) -> dict[int, float]:
@@ -195,7 +198,7 @@ def _forecast_days(as_of: date, days: int, monthly_rate: float, season: dict[int
 
 
 def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[str, str], dict[int, float]]) -> dict:
-    adjusted, excluded, imputed, flags = clean_demand(product, settings.as_of)
+    adjusted, excluded, imputed, flags, excluded_clients = clean_demand(product, settings.as_of)
     months = sorted(adjusted)
     if len(months) < 3:
         return {"supplier": product.supplier, "code": product.code, "name": product.name,
@@ -237,6 +240,9 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         reason += f" Потребность до округления: {shortage:.1f}; предложено: {quantity}."
     if excluded:
         reason += f" Исключено разовых всплесков: {sum(excluded.values()):.0f}."
+    if excluded_clients:
+        details = ", ".join(f"{identifier}: {amount:.0f}" for identifier, amount in sorted(excluded_clients.items()))
+        reason += f" Из них по ID клиента: {details}."
     if imputed:
         reason += f" Восстановлено спроса при дефиците: {sum(imputed.values()):.0f}."
     return {
@@ -246,6 +252,7 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         "free_stock": stock, "inbound": round(inbound, 2), "moq": max(1, product.moq),
         "growth": round(growth, 4), "seasonal_factor": round(season[(settings.as_of + timedelta(days=1)).month], 3),
         "excluded_outliers": round(sum(excluded.values()), 2),
+        "excluded_customers": {identifier: round(amount, 2) for identifier, amount in excluded_clients.items()},
         "imputed_stockouts": round(sum(imputed.values()), 2),
         "flags": list(dict.fromkeys(product.warnings + flags)), "reason": reason,
     }
