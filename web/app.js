@@ -170,15 +170,27 @@ function renderSuppliers(suppliers) {
   }).join('');
 }
 
-async function loadAudit() {
-  const data = await request('/api/audit');
-  $('auditList').innerHTML = data.events.length ? data.events.slice(0, 30).map((event) => {
+const auditExamples = [
+  { at: '2026-09-22T10:15:00+05:00', event: 'approval', code: 'DEMO-B310', supplier: 'Демо-поставщик Б', recommended_quantity: 90, approved_quantity: 100, previous_quantity: null },
+  { at: '2026-09-22T09:40:00+05:00', event: 'stock', code: 'DEMO-B840', supplier: 'Демо-поставщик Б', previous_stock: null, new_stock: 0 },
+];
+
+function renderAuditEvents(events, example = false) {
+  return events.map((event) => {
     const when = new Date(event.at).toLocaleString(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     const detail = event.event === 'approval'
       ? t('approvalDetail', { approved: fmt.format(event.approved_quantity), recommended: fmt.format(event.recommended_quantity) }) + (event.previous_quantity == null ? '' : t('previousQty', { previous: fmt.format(event.previous_quantity) }))
       : t('stockDetail', { previous: event.previous_stock == null ? t('unspecified') : fmt.format(event.previous_stock), next: fmt.format(event.new_stock) });
-    return `<div class="audit-item"><time>${esc(when)}</time><div><strong>${esc(event.code)}</strong><span>${esc(displaySupplier(event.supplier))}</span><p>${esc(detail)}</p></div></div>`;
-  }).join('') : t('emptyAudit');
+    return `<div class="audit-item"><time datetime="${esc(event.at)}">${esc(when)}</time><div><strong>${esc(event.code)}</strong><span>${esc(displaySupplier(event.supplier))}</span>${example ? `<span class="audit-sample-badge">${esc(t('auditExampleBadge'))}</span>` : ''}<p>${esc(detail)}</p></div></div>`;
+  }).join('');
+}
+
+async function loadAudit() {
+  const data = await request('/api/audit');
+  $('auditList').innerHTML = data.events.length ? renderAuditEvents(data.events.slice(0, 30)) : esc(t('emptyAudit'));
+  const examples = $('auditExamples');
+  examples.hidden = state.meta.mode !== 'synthetic';
+  if (!examples.hidden) $('auditExampleList').innerHTML = renderAuditEvents(auditExamples, true);
 }
 
 function renderRows() {

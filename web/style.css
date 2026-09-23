@@ -30,6 +30,7 @@
 .settings-page p{font-size:12px;color:var(--muted);line-height:1.6;margin:24px 0 0}
 .panel-caption{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--teal);align-self:center}
 body[data-page="suppliers"] .supplier-section,body[data-page="audit"] .audit-section{margin:0 0 36px}
+.audit-example-help{font-size:12px;line-height:1.55;color:var(--muted);margin:-4px 0 14px}.audit-sample-badge{display:inline-block;margin-left:10px;padding:3px 7px;border-radius:5px;background:#e9f1f6;color:#315f7c;font-size:10px!important;font-weight:800}
 @media(max-width:850px){.page-links{grid-template-columns:1fr}.page-links a{min-height:100px;gap:10px}}
 @media(max-width:540px){.main-nav{margin:0 -16px;padding:9px 16px 11px}.main-nav a{padding:8px 11px}.page-heading{margin-top:27px}.settings-page{padding:22px 18px}.topbar{height:68px}}
 @media(max-width:540px){.main-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible;white-space:normal}.main-nav a{justify-content:center;text-align:center;font-size:11px;padding:8px 4px}}

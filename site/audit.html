@@ -23,8 +23,14 @@
     </header>
     <main>
       <div class="page-heading"><div class="section-kicker" data-i18n="auditKicker">ПРОВЕРКА РЕШЕНИЙ</div><h1 data-i18n="auditTitle">История утверждений и остатков</h1><p data-i18n="auditPageHelp">Здесь видны изменения остатков и утверждённые количества.</p></div>
-      <section class="audit-section" aria-label="История решений" data-i18n-aria-label="auditTitle">
+      <section class="audit-section" aria-labelledby="auditActualTitle">
+        <h2 id="auditActualTitle" data-i18n="auditActualTitle">Действия в демо</h2>
         <div id="auditList" class="audit-list">Пока нет действий закупщика.</div>
+      </section>
+      <section id="auditExamples" class="audit-section audit-examples" aria-labelledby="auditExampleTitle" hidden>
+        <h2 id="auditExampleTitle" data-i18n="auditExampleTitle">Пример истории</h2>
+        <p class="audit-example-help" data-i18n="auditExampleHelp">Вымышленные события показывают, как выглядит журнал. Они не считаются утверждениями и не попадают в CSV.</p>
+        <div id="auditExampleList" class="audit-list"></div>
       </section>
       <div id="notice" class="notice" role="status" hidden></div>
     </main>
