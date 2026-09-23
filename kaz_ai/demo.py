@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 from .engine import Arrival, Product, Sale
+from .parameters import scenario_parameter
 
 
 def demo_dataset(as_of: date = date(2026, 9, 22)) -> tuple[list[Product], dict[str, dict[str, float]]]:
@@ -52,9 +53,31 @@ def demo_dataset(as_of: date = date(2026, 9, 22)) -> tuple[list[Product], dict[s
 
     safety_by_category = {"Защита": 7, "Кабель": 5, "Монтаж": 4,
                           "Розетки": 6, "Выключатели": 5}
+    fictional_unit_costs = {
+        "DEMO-A101": 4200, "DEMO-A202": 780, "DEMO-B310": 3100,
+        "DEMO-B440": 3600, "DEMO-A303": 1250, "DEMO-A404": 690,
+        "DEMO-B510": 8900, "DEMO-B620": 1150, "DEMO-A505": 12400,
+        "DEMO-B730": 2400, "DEMO-A606": 15900, "DEMO-B840": 18500,
+    }
     for product in products:
         product.lead_time_days = 12 if product.supplier == a else 21
         product.safety_days = safety_by_category[product.category]
+        product.parameters.set(
+            "lead_time_days",
+            scenario_parameter(product.lead_time_days, "days", "Вымышленный срок для хакатонного сценария"),
+        )
+        product.parameters.set(
+            "safety_days",
+            scenario_parameter(product.safety_days, "days", "Вымышленная политика страхового запаса"),
+        )
+        product.parameters.set(
+            "moq",
+            scenario_parameter(product.moq, "units", "Вымышленная кратность демонстрационного товара"),
+        )
+        product.parameters.set(
+            "unit_cost",
+            scenario_parameter(fictional_unit_costs[product.code], "KZT", "Вымышленная закупочная цена"),
+        )
     regular_demand = {product.code: dict(product.monthly_sales) for product in products}
 
     # Detail lines reconcile to monthly totals; all customer IDs are fictional.
