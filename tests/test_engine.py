@@ -8,6 +8,14 @@ from threading import Thread
 
 from kaz_ai.demo import demo_products
 from kaz_ai.engine import Arrival, ForecastSettings, Product, Sale, recommend, recommend_all
+from kaz_ai.parameters import (
+    ParameterSet,
+    ParameterSource,
+    confirmed_parameter,
+    missing_parameter,
+    scenario_parameter,
+    user_parameter,
+)
 from kaz_ai.server import AppState, Handler
 
 
@@ -32,6 +40,49 @@ def run(p, as_of=AS_OF, days=30, context=None):
 
 
 class ReplenishmentAcceptanceTests(unittest.TestCase):
+    def test_parameter_readiness_distinguishes_fact_scenario_and_missing(self):
+        values = ParameterSet()
+        values.set("lead_time_days", confirmed_parameter(14, ParameterSource.PARTNER_EXPORT, "days"))
+        values.set("safety_days", scenario_parameter(5, "days"))
+        values.set("moq", missing_parameter("units"))
+        readiness = values.readiness(("lead_time_days", "safety_days", "moq"))
+        self.assertEqual(readiness["status"], "blocked")
+        self.assertEqual(readiness["missing"], ["moq"])
+        self.assertEqual(readiness["unverified"], ["safety_days"])
+
+    def test_user_parameters_are_order_ready_and_drive_cost(self):
+        p = product(moq=99, lead_time_days=None, safety_days=0)
+        p.parameters.set("lead_time_days", user_parameter(10, "days"))
+        p.parameters.set("safety_days", user_parameter(4, "days"))
+        p.parameters.set("moq", user_parameter(5, "units"))
+        p.parameters.set("unit_cost", user_parameter(1200, "KZT"))
+        row = run(p)
+        self.assertEqual(row["terms_readiness"]["status"], "confirmed")
+        self.assertTrue(row["terms_readiness"]["order_ready"])
+        self.assertEqual(row["moq"], 5)
+        self.assertEqual(row["lead_time_days"], 10)
+        self.assertEqual(row["safety_days"], 4)
+        self.assertEqual(row["order_value"], row["quantity"] * 1200)
+        self.assertEqual(row["pricing_status"], "user_input")
+
+    def test_demo_cost_is_explicitly_an_assumption(self):
+        row = run(demo_products()[0])
+        self.assertEqual(row["terms_readiness"]["status"], "scenario")
+        self.assertFalse(row["terms_readiness"]["order_ready"])
+        self.assertGreater(row["order_value"], 0)
+        self.assertEqual(row["pricing_status"], "assumption")
+        self.assertEqual(row["parameter_trace"]["unit_cost"]["source"], "demo_assumption")
+
+    def test_unspecified_purchase_terms_are_not_silently_confirmed(self):
+        p = Product("Supplier A", "SKU-MISSING", "Без условий", months(), free_stock=0, stock_as_of=AS_OF)
+        row = run(p)
+        self.assertEqual(row["terms_readiness"]["status"], "blocked")
+        self.assertCountEqual(row["terms_readiness"]["missing"], ["lead_time_days", "safety_days", "moq"])
+        self.assertIsNone(row["lead_time_days"])
+        self.assertIsNone(row["safety_days"])
+        self.assertEqual(row["moq"], 1)
+        self.assertIn("Параметры заказа неполные", row["flags"])
+
     def test_exact_gap_and_moq_rounding(self):
         p = product(free_stock=20, moq=10,
                     inbound=[Arrival(date(2026, 10, 1), 10)])
@@ -234,6 +285,26 @@ class ReplenishmentAcceptanceTests(unittest.TestCase):
                 app.approve([{"supplier": p.supplier, "code": p.code, "quantity": 10}], 30)
             with self.assertRaisesRegex(ValueError, "заблокирован"):
                 app.export_csv()
+
+    def test_partner_order_unlocks_only_after_explicit_terms(self):
+        p = product(lead_time_days=None, safety_days=None, moq=None)
+        p.parameters.set("lead_time_days", user_parameter(14, "days"))
+        p.parameters.set("safety_days", user_parameter(5, "days"))
+        p.parameters.set("moq", confirmed_parameter(10, ParameterSource.PARTNER_EXPORT, "units"))
+        p.parameters.set("unit_cost", user_parameter(2500, "KZT"))
+        report = {"mode": "partner", "as_of": AS_OF.isoformat(), "archives": ["partner.zip"], "products": 1}
+        with tempfile.TemporaryDirectory() as temp:
+            app = AppState([p], report, Path(temp) / "orders.json")
+            row = app.rows(30)[0]
+            self.assertEqual(row["status"], "ready")
+            self.assertTrue(row["terms_readiness"]["order_ready"])
+            self.assertGreater(row["quantity"], 0)
+            self.assertEqual(row["order_value"], row["quantity"] * 2500)
+            self.assertEqual(
+                app.approve([{"supplier": p.supplier, "code": p.code, "quantity": row["quantity"]}], 30),
+                1,
+            )
+            self.assertIn("SKU-1", app.export_csv().decode("utf-8-sig"))
 
 
 if __name__ == "__main__":
