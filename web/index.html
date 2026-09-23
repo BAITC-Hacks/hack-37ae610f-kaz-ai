@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KAZ-AI — рекомендации для закупок</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">K</span><span>KAZ-AI</span><span class="brand-sub">/ закупки</span></div>
+      <span class="topbar-note">Электрокомплект · HackAlem AI</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> РЕШЕНИЕ ДЛЯ ЗАКУПЩИКА</div>
+          <h1>Заказывать вовремя.<br><em>Понимать почему.</em></h1>
+          <p>Прогноз спроса с учётом сезонности, роста, дефицита и товаров в пути. Каждое количество можно проверить и скорректировать перед утверждением.</p>
+        </div>
+        <div class="snapshot">
+          <div class="snapshot-label">Срез данных</div>
+          <strong id="asOf">—</strong>
+          <div id="sourceMode" class="source-mode">Загрузка…</div>
+          <span class="snapshot-line"></span>
+          <div class="snapshot-foot">Отправки поставщикам нет. Решение утверждает сотрудник.</div>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Сводка">
+        <div class="stat"><span>Артикулов в расчёте</span><strong id="statProducts">—</strong><small>по всем источникам</small></div>
+        <div class="stat"><span>Рекомендации к заказу</span><strong id="statOrders">—</strong><small>положительное количество</small></div>
+        <div class="stat"><span>Подтверждённый остаток</span><strong id="statReady">—</strong><small>можно утвердить</small></div>
+        <div class="stat stat-attention"><span>Нужен остаток</span><strong id="statMissing">—</strong><small>заказ пока не рассчитан</small></div>
+      </section>
+
+      <section id="warnings" class="warnings" hidden></section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div><div class="section-kicker">РАСЧЁТ ЗАПАСА</div><h2>Рекомендации</h2><p>Выберите позиции, при необходимости измените количество и утвердите их.</p></div>
+          <div class="approved-box"><span>Утверждено</span><strong id="approvedCount">0</strong><a id="exportLink" href="/api/export.csv" class="button button-outline disabled" aria-disabled="true">Экспорт CSV ↗</a></div>
+        </div>
+        <div class="filters">
+          <label>Поставщик<select id="supplier"><option value="">Все поставщики</option></select></label>
+          <label>Категория<select id="category"><option value="">Все категории</option></select></label>
+          <label>Горизонт расчёта<select id="days"><option value="14">14 дней</option><option value="30" selected>30 дней</option><option value="45">45 дней</option><option value="60">60 дней</option></select></label>
+          <label class="search-label">Поиск<input id="search" type="search" placeholder="Код или наименование"></label>
+          <label class="toggle"><input id="ordersOnly" type="checkbox" checked><span>Только к заказу</span></label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th class="check-col"></th><th>Позиция</th><th>Поставщик</th><th>Спрос<br><small>на горизонт</small></th><th>Свободно</th><th>В пути</th><th>Заказать</th><th>Срочность</th></tr></thead>
+            <tbody id="rows"><tr><td colspan="8" class="empty">Загружаем расчёт…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="panel-footer"><span id="paginationText">—</span><div class="pager"><button id="prevPage" aria-label="Предыдущая страница">←</button><button id="nextPage" aria-label="Следующая страница">→</button></div></div>
+      </section>
+
+      <div class="action-bar" id="actionBar" hidden><div><span id="selectionCount">0 позиций выбрано</span><small>Количество должно быть кратно минимальной партии.</small></div><button id="approve" class="button button-primary" disabled>Утвердить выбранные <span>→</span></button></div>
+      <div id="notice" class="notice" role="status" hidden></div>
+    </main>
+    <footer><span>KAZ-AI · Прозрачные рекомендации для закупок</span><span>Локальный прототип · данные не отправляются поставщикам</span></footer>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+"""Local-only review UI. Supplier dispatch is deliberately absent."""
+
+from __future__ import annotations
+
+import csv
+import io
+import json
+import hashlib
+import math
+from datetime import date, datetime, timezone
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from threading import Lock
+from urllib.parse import parse_qs, urlsplit
+
+from .engine import ForecastSettings, Product, recommend_all
+
+
+ROOT = Path(__file__).resolve().parent.parent
+PUBLIC = ROOT / "web"
+
+
+def _csv_text(value: object) -> str:
+    text = str(value if value is not None else "")
+    return "'" + text if text.lstrip().startswith(("=", "+", "-", "@")) else text
+
+
+class AppState:
+    def __init__(self, products: list[Product], report: dict, storage: Path):
+        self.products = products
+        self.report = report
+        self.as_of = date.fromisoformat(report["as_of"])
+        self.storage = storage
+        self.stock_storage = storage.with_name(storage.stem + "-stocks.json")
+        self.lock = Lock()
+        self.cache: dict[int, list[dict]] = {}
+        self.approved: dict[str, dict] = {}
+        self.by_key = {(p.supplier, p.code): p for p in products}
+        if self.stock_storage.exists():
+            saved_stocks = json.loads(self.stock_storage.read_text(encoding="utf-8"))
+            for key, value in saved_stocks.items():
+                supplier, _, code = key.partition("\u241f")
+                product = self.by_key.get((supplier, code))
+                if product and isinstance(value, (int, float)) and math.isfinite(value) and value >= 0:
+                    product.free_stock = float(value)
+                    product.stock_as_of = self.as_of
+                    product.warnings.append("Остаток внесён вручную")
+        if storage.exists():
+            saved = json.loads(storage.read_text(encoding="utf-8"))
+            self.approved = {str(k): v for k, v in saved.items() if isinstance(v, dict)}
+
+    def rows(self, days: int) -> list[dict]:
+        if days not in self.cache:
+            self.cache[days] = recommend_all(self.products, ForecastSettings(self.as_of, days))
+        return self.cache[days]
+
+    def approve(self, items: list[dict], days: int) -> int:
+        available = {(r["supplier"], r["code"]): r for r in self.rows(days)}
+        prepared: list[tuple[str, dict]] = []
+        if not items or len(items) > 500:
+            raise ValueError("Выберите от 1 до 500 позиций")
+        for item in items:
+            supplier, code = str(item.get("supplier", "")), str(item.get("code", ""))
+            row = available.get((supplier, code))
+            if not row or row["status"] != "ready":
+                raise ValueError(f"Нет подтверждённого остатка для {code}")
+            try:
+                amount = int(item["quantity"])
+            except (ValueError, TypeError, KeyError):
+                raise ValueError(f"Некорректное количество для {code}") from None
+            if amount <= 0 or amount > 10_000_000 or amount % row["moq"] != 0:
+                raise ValueError(f"Количество {code} должно быть положительным и кратным {row['moq']}")
+            key = f"{supplier}\u241f{code}"
+            prepared.append((key, {
+                "supplier": supplier, "code": code, "name": row["name"], "quantity": amount,
+                "recommended_quantity": row["quantity"], "reason": row["reason"],
+                "as_of": self.as_of.isoformat(), "coverage_days": days,
+                "approved_at": datetime.now(timezone.utc).isoformat(),
+            }))
+        with self.lock:
+            for key, item in prepared:
+                self.approved[key] = item
+            self.storage.parent.mkdir(parents=True, exist_ok=True)
+            temp = self.storage.with_suffix(".tmp")
+            temp.write_text(json.dumps(self.approved, ensure_ascii=False, indent=2), encoding="utf-8")
+            temp.replace(self.storage)
+        return len(prepared)
+
+    def set_stock(self, supplier: str, code: str, amount: object) -> None:
+        product = self.by_key.get((supplier, code))
+        if product is None:
+            raise ValueError("Артикул не найден")
+        try:
+            number = float(amount)
+        except (ValueError, TypeError):
+            raise ValueError("Некорректный остаток") from None
+        if not math.isfinite(number) or number < 0 or number > 100_000_000:
+            raise ValueError("Остаток должен быть неотрицательным числом")
+        with self.lock:
+            product.free_stock = number
+            product.stock_as_of = self.as_of
+            if "Остаток внесён вручную" not in product.warnings:
+                product.warnings.append("Остаток внесён вручную")
+            key = f"{supplier}\u241f{code}"
+            stocks = json.loads(self.stock_storage.read_text(encoding="utf-8")) if self.stock_storage.exists() else {}
+            stocks[key] = number
+            self.stock_storage.parent.mkdir(parents=True, exist_ok=True)
+            temp = self.stock_storage.with_suffix(".tmp")
+            temp.write_text(json.dumps(stocks, ensure_ascii=False, indent=2), encoding="utf-8")
+            temp.replace(self.stock_storage)
+            self.approved.pop(key, None)
+            if self.storage.exists():
+                self.storage.write_text(json.dumps(self.approved, ensure_ascii=False, indent=2), encoding="utf-8")
+            self.cache.clear()
+
+    def export_csv(self) -> bytes:
+        output = io.StringIO()
+        writer = csv.writer(output, delimiter=";")
+        writer.writerow(["Поставщик", "Код 1С", "Наименование", "Количество", "Рекомендация", "Дата среза", "Горизонт, дни", "Обоснование"])
+        for item in sorted(self.approved.values(), key=lambda x: (x["supplier"], x["code"])):
+            writer.writerow([_csv_text(item.get(key)) for key in (
+                "supplier", "code", "name", "quantity", "recommended_quantity", "as_of", "coverage_days", "reason"
+            )])
+        return ("\ufeff" + output.getvalue()).encode("utf-8")
+
+
+class Handler(BaseHTTPRequestHandler):
+    state: AppState
+
+    def _send(self, body: bytes, mime: str, status: int = 200, disposition: str | None = None):
+        self.send_response(status)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        if disposition:
+            self.send_header("Content-Disposition", disposition)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _json(self, payload: dict, status: int = 200):
+        self._send(json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8"), "application/json; charset=utf-8", status)
+
+    def do_GET(self):
+        path = urlsplit(self.path)
+        if path.path in ("/", "/app.js", "/style.css"):
+            filename = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css"}[path.path]
+            mime = "text/html; charset=utf-8" if filename.endswith(".html") else "text/javascript; charset=utf-8" if filename.endswith(".js") else "text/css; charset=utf-8"
+            self._send((PUBLIC / filename).read_bytes(), mime)
+            return
+        if path.path == "/api/meta":
+            suppliers = sorted({p.supplier for p in self.state.products})
+            categories = sorted({p.category for p in self.state.products if p.category})
+            self._json({**self.state.report, "suppliers": suppliers, "categories": categories,
+                        "approved_count": len(self.state.approved)})
+            return
+        if path.path == "/api/recommendations":
+            query = parse_qs(path.query)
+            try:
+                days = int(query.get("days", ["30"])[0])
+                settings = ForecastSettings(self.state.as_of, days)
+                limit = min(250, max(1, int(query.get("limit", ["100"])[0])))
+                offset = max(0, int(query.get("offset", ["0"])[0]))
+            except (ValueError, TypeError) as exc:
+                self._json({"error": str(exc)}, 400)
+                return
+            rows = self.state.rows(settings.coverage_days)
+            supplier = query.get("supplier", [""])[0]
+            category = query.get("category", [""])[0]
+            search = query.get("q", [""])[0].strip().casefold()
+            only_orders = query.get("orders", ["1"])[0] == "1"
+            filtered = [r for r in rows if (not supplier or r["supplier"] == supplier)
+                        and (not category or r.get("category") == category)
+                        and (not search or search in r["code"].casefold() or search in r["name"].casefold())
+                        and (not only_orders or (r.get("quantity") or 0) > 0)]
+            self._json({
+                "rows": filtered[offset:offset + limit], "total": len(filtered), "offset": offset,
+                "summary": {"products": len(rows), "ready": sum(r["status"] == "ready" for r in rows),
+                            "orders": sum((r.get("quantity") or 0) > 0 for r in rows),
+                            "needs_stock": sum(r["status"] == "needs_stock" for r in rows),
+                            "insufficient_history": sum(r["status"] == "insufficient_history" for r in rows)},
+            })
+            return
+        if path.path == "/api/approved":
+            self._json({"items": list(self.state.approved.values())})
+            return
+        if path.path == "/api/export.csv":
+            if not self.state.approved:
+                self._json({"error": "Нет утверждённых позиций"}, 400)
+                return
+            self._send(self.state.export_csv(), "text/csv; charset=utf-8", disposition='attachment; filename="supplier_orders.csv"')
+            return
+        self._json({"error": "Not found"}, 404)
+
+    def do_POST(self):
+        path = urlsplit(self.path).path
+        if path not in ("/api/approve", "/api/stock"):
+            self._json({"error": "Not found"}, 404)
+            return
+        if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+            self._json({"error": "Expected application/json"}, 415)
+            return
+        try:
+            size = int(self.headers.get("Content-Length", "0"))
+            if size <= 0 or size > 100_000:
+                raise ValueError("Размер запроса превышен")
+            body = json.loads(self.rfile.read(size))
+            if path == "/api/stock":
+                self.state.set_stock(str(body.get("supplier", "")), str(body.get("code", "")), body.get("quantity"))
+                self._json({"saved": True, "approved_count": len(self.state.approved)})
+                return
+            days = int(body.get("days", 30))
+            ForecastSettings(self.state.as_of, days)
+            count = self.state.approve(body.get("items", []), days)
+            self._json({"approved": count, "approved_count": len(self.state.approved)})
+        except (ValueError, TypeError, json.JSONDecodeError) as exc:
+            self._json({"error": str(exc)}, 400)
+
+    def log_message(self, format: str, *args):
+        pass
+
+
+def serve(products: list[Product], report: dict, port: int = 8765, storage: Path | None = None):
+    dataset_id = report.get("dataset_id") or hashlib.sha256(
+        json.dumps([report.get("mode"), report["archives"], report["as_of"], report["products"]], ensure_ascii=False).encode()
+    ).hexdigest()[:12]
+    state = AppState(products, report, storage or ROOT / ".local" / f"{dataset_id}-orders.json")
+    handler = type("KazAIHandler", (Handler,), {"state": state})
+    httpd = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    print(f"Kaz-AI: http://127.0.0.1:{httpd.server_port}/")
+    print(f"Source: {', '.join(report['archives'])}; products: {report['products']}; as of: {report['as_of']}")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        httpd.server_close()
