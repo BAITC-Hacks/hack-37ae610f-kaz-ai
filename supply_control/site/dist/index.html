@@ -24,13 +24,13 @@
 
         <section class="sidebar-status" aria-labelledby="source-title">
           <p class="eyebrow" id="source-title">Источник</p>
-          <div class="source-row"><span class="status-dot"></span><strong>Systeme Electric</strong></div>
-          <p>Срез на 22.09.2026</p>
-          <p>497 товарных позиций</p>
+          <div class="source-row"><span class="status-dot"></span><strong id="source-name">—</strong></div>
+          <p id="source-date">—</p>
+          <p id="source-count">—</p>
         </section>
 
         <div class="sidebar-foot">
-          <span class="demo-badge">ДЕМО</span>
+          <span class="demo-badge" id="data-badge">ДЕМО</span>
           <p>Заказ не отправляется поставщику без подтверждения.</p>
         </div>
       </aside>
@@ -42,6 +42,13 @@
             <h1>Рекомендации к заказу</h1>
           </div>
           <div class="topbar-actions">
+            <label class="mode-control">
+              <span>Режим</span>
+              <select id="dataset-mode">
+                <option value="synthetic">Проверка требований</option>
+                <option value="partner">Данные партнёра</option>
+              </select>
+            </label>
             <label class="button secondary file-button">
               <input id="file-input" type="file" accept="application/json,.json" />
               Загрузить расчёт
@@ -51,14 +58,14 @@
         </header>
 
         <section class="warning-banner" aria-label="Статус сценария">
-          <strong>Демонстрационный сценарий</strong>
-          <span>Lead time, страховой запас и категории требуют подтверждения партнёра.</span>
+          <strong id="warning-title">Демонстрационный сценарий</strong>
+          <span id="warning-copy">Загрузка данных…</span>
           <button type="button" id="scenario-link">Показать допущения</button>
         </section>
 
         <section class="metrics-grid" aria-label="Ключевые показатели">
           <article class="metric-card emphasis">
-            <p>Оценочная стоимость</p>
+            <p id="metric-primary-label">Оценочная стоимость</p>
             <strong id="metric-value">—</strong>
             <span id="metric-lines">— строк к заказу</span>
           </article>
@@ -85,11 +92,19 @@
             <h2 id="quality-title">Результат нельзя принимать вслепую</h2>
           </div>
           <div class="quality-grid">
-            <div class="quality-item"><span>Stockout-периоды</span><strong class="bad">0%</strong><small>не переданы</small></div>
-            <div class="quality-item"><span>MOQ</span><strong id="quality-moq">—</strong><small>покрытие справочника</small></div>
-            <div class="quality-item"><span>Ограничен рост</span><strong id="quality-growth">—</strong><small>защита от выбросов</small></div>
-            <div class="quality-item"><span>Ограничена сезонность</span><strong id="quality-season">—</strong><small>защита от выбросов</small></div>
+            <div class="quality-item"><span id="quality-a-label">Stockout-периоды</span><strong class="bad" id="quality-a">—</strong><small id="quality-a-note">покрытие данных</small></div>
+            <div class="quality-item"><span id="quality-b-label">MOQ</span><strong id="quality-b">—</strong><small id="quality-b-note">покрытие справочника</small></div>
+            <div class="quality-item"><span id="quality-c-label">Ошибка прогноза</span><strong id="quality-c">—</strong><small id="quality-c-note">rolling backtest</small></div>
+            <div class="quality-item"><span id="quality-d-label">Систематическое смещение</span><strong id="quality-d">—</strong><small id="quality-d-note">bias прогноза</small></div>
           </div>
+        </section>
+
+        <section class="proof-panel" id="requirements-proof" aria-labelledby="proof-title" hidden>
+          <div>
+            <p class="eyebrow">Приёмочная проверка</p>
+            <h2 id="proof-title">Обязательные требования кейса</h2>
+          </div>
+          <div class="proof-grid" id="proof-grid"></div>
         </section>
 
         <section class="workspace-card" id="recommendations" aria-labelledby="table-title">
@@ -123,6 +138,7 @@
               <span class="sr-only">Статус</span>
               <select id="status-filter">
                 <option value="all">Любой статус</option>
+                <option value="ready_for_approval">Готово к подтверждению</option>
                 <option value="review_required">Требует проверки</option>
                 <option value="blocked">Заблокировано</option>
               </select>
@@ -204,4 +220,3 @@
     <script src="./app.js" defer></script>
   </body>
 </html>
-
