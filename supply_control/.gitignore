@@ -6,3 +6,4 @@ data/raw/
 data/extracted/
 site/.git/
 site/.sites-runtime/
+site/public-dist/
