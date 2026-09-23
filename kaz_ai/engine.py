@@ -7,6 +7,15 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
+from .parameters import (
+    Confidence,
+    ParameterSet,
+    ParameterSource,
+    ParameterStatus,
+    ParameterValue,
+    missing_parameter,
+)
+
 
 @dataclass(frozen=True)
 class Arrival:
@@ -34,12 +43,13 @@ class Product:
     inbound: list[Arrival] = field(default_factory=list)
     category: str | None = None
     source_growth: float | None = None
-    moq: int = 1
+    moq: int | None = None
     lead_time_days: int | None = None
-    safety_days: int = 0
+    safety_days: int | None = None
     sales: list[Sale] = field(default_factory=list)
     stockout_days: dict[str, int] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    parameters: ParameterSet = field(default_factory=ParameterSet)
 
 
 @dataclass(frozen=True)
@@ -199,6 +209,39 @@ def _forecast_days(as_of: date, days: int, monthly_rate: float, season: dict[int
     return max(0.0, result)
 
 
+def _resolved_parameter(
+    product: Product,
+    name: str,
+    legacy_value: float | int | None,
+    unit: str,
+    missing_note: str,
+) -> ParameterValue:
+    explicit = product.parameters.get(name)
+    if explicit is not None:
+        return explicit
+    if legacy_value is None:
+        return missing_parameter(unit, missing_note)
+    return ParameterValue(
+        legacy_value,
+        ParameterStatus.CONFIRMED,
+        ParameterSource.LEGACY_FIELD,
+        Confidence.MEDIUM,
+        unit,
+        "Значение из существующей модели без отдельной записи происхождения",
+    )
+
+
+def _parameter_text(parameter: ParameterValue, fallback: int = 0) -> str:
+    if parameter.status == ParameterStatus.MISSING:
+        return "не задан"
+    status = {
+        ParameterStatus.CONFIRMED: "подтверждено",
+        ParameterStatus.USER_INPUT: "ввод пользователя",
+        ParameterStatus.ASSUMPTION: "сценарий",
+    }[parameter.status]
+    return f"{int(parameter.value or fallback)} дн. ({status})"
+
+
 def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[str, str], dict[int, float]]) -> dict:
     adjusted, excluded, imputed, flags, excluded_clients = clean_demand(product, settings.as_of)
     months = sorted(adjusted)
@@ -213,8 +256,28 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
     own_weight = 0.7 if sum(v > 0 for v in adjusted.values()) >= 12 else 0.25
     season = {m: _clamp(own_weight * own_season[m] + (1 - own_weight) * peer[m], 0.4, 2.5) for m in range(1, 13)}
     growth = _trend(adjusted, product.source_growth)
-    lead_days = max(0, int(product.lead_time_days or 0))
-    safety_days = max(0, int(product.safety_days))
+    lead_parameter = _resolved_parameter(
+        product, "lead_time_days", product.lead_time_days, "days", "Срок поставки не предоставлен"
+    )
+    safety_parameter = _resolved_parameter(
+        product, "safety_days", product.safety_days, "days", "Страховой запас не предоставлен"
+    )
+    moq_parameter = _resolved_parameter(
+        product, "moq", product.moq, "units", "Кратность заказа не предоставлена"
+    )
+    unit_cost_parameter = product.parameters.get("unit_cost") or missing_parameter(
+        "KZT", "Закупочная цена не предоставлена"
+    )
+    resolved_parameters = ParameterSet({
+        "lead_time_days": lead_parameter,
+        "safety_days": safety_parameter,
+        "moq": moq_parameter,
+        "unit_cost": unit_cost_parameter,
+    })
+    terms_readiness = resolved_parameters.readiness(("lead_time_days", "safety_days", "moq"))
+    lead_days = max(0, int(lead_parameter.value or 0))
+    safety_days = max(0, int(safety_parameter.value or 0))
+    moq = max(1, int(moq_parameter.value or 1))
     target_days = settings.coverage_days + lead_days + safety_days
     coverage_forecast = _forecast_days(settings.as_of, settings.coverage_days, base, season, growth)
     forecast = _forecast_days(settings.as_of, target_days, base, season, growth)
@@ -230,8 +293,7 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
     status = "needs_stock" if stock is None else "ready"
     if stock is not None:
         shortage = max(0.0, forecast - max(0.0, stock) - inbound)
-        multiple = max(1, int(product.moq))
-        quantity = math.ceil((shortage - 1e-9) / multiple) * multiple if shortage > 1e-9 else 0
+        quantity = math.ceil((shortage - 1e-9) / moq) * moq if shortage > 1e-9 else 0
     soon_days = lead_days if lead_days else min(14, settings.coverage_days)
     soon_demand = _forecast_days(settings.as_of, soon_days, base, season, growth)
     soon_inbound = sum(max(0.0, a.quantity) for a in product.inbound
@@ -242,12 +304,20 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         f"Спрос на {target_days} дн.: {forecast:.1f}; "
         f"свободный остаток: {stock:.0f}; " if stock is not None else
         f"Спрос на {target_days} дн.: {forecast:.1f}; текущий остаток не предоставлен; "
-    ) + (f"покрытие: {settings.coverage_days} дн.; срок поставки: {lead_days} дн.; "
-         f"страховой запас: {safety_days} дн. (+{forecast - coverage_forecast:.1f} к спросу); "
+    ) + (f"покрытие: {settings.coverage_days} дн.; срок поставки: {_parameter_text(lead_parameter)}; "
+         f"страховой запас: {_parameter_text(safety_parameter)} (+{forecast - coverage_forecast:.1f} к спросу); "
          f"в пути до {horizon_end:%d.%m}: {inbound:.0f}; рост: {growth:+.0%}; "
-         f"кратность: {max(1, product.moq)}.")
-    if product.lead_time_days is None:
+         f"кратность: {moq}.")
+    if lead_parameter.status == ParameterStatus.MISSING:
         flags.append("Срок поставки не задан; использован только выбранный горизонт")
+    if safety_parameter.status == ParameterStatus.MISSING:
+        flags.append("Политика страхового запаса не задана")
+    if moq_parameter.status == ParameterStatus.MISSING:
+        flags.append("Кратность заказа не задана; для сценария использована 1 единица")
+    if terms_readiness["status"] == "scenario":
+        flags.append("Расчёт использует сценарные параметры")
+    elif terms_readiness["status"] == "blocked":
+        flags.append("Параметры заказа неполные")
     if shortage is not None:
         reason += f" Потребность до округления: {shortage:.1f}; предложено: {quantity}."
     if excluded:
@@ -262,10 +332,16 @@ def recommend(product: Product, settings: ForecastSettings, context: dict[tuple[
         "category": product.category or "—", "status": status, "quantity": quantity,
         "urgency": urgency, "forecast": round(forecast, 2), "base_monthly": round(base, 2),
         "coverage_forecast": round(coverage_forecast, 2), "target_days": target_days,
-        "lead_time_days": product.lead_time_days, "safety_days": safety_days,
+        "lead_time_days": lead_parameter.value, "safety_days": safety_parameter.value,
         "lead_demand": round(soon_demand, 2), "lead_inbound": round(soon_inbound, 2),
         "risk_before_delivery": round(risk_before_delivery, 2) if risk_before_delivery is not None else None,
-        "free_stock": stock, "inbound": round(inbound, 2), "moq": max(1, product.moq),
+        "free_stock": stock, "inbound": round(inbound, 2), "moq": moq,
+        "unit_cost": unit_cost_parameter.value,
+        "order_value": round(quantity * float(unit_cost_parameter.value), 2)
+        if quantity is not None and unit_cost_parameter.value is not None else None,
+        "pricing_status": unit_cost_parameter.status.value,
+        "parameter_trace": resolved_parameters.trace(("lead_time_days", "safety_days", "moq", "unit_cost")),
+        "terms_readiness": terms_readiness,
         "growth": round(growth, 4), "seasonal_factor": round(season[(settings.as_of + timedelta(days=1)).month], 3),
         "excluded_outliers": round(sum(excluded.values()), 2),
         "excluded_customers": {identifier: round(amount, 2) for identifier, amount in excluded_clients.items()},

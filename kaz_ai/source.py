@@ -13,6 +13,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from .engine import Arrival, Product, Sale
+from .parameters import ParameterSource, confirmed_parameter
 
 
 MONTHS = {
@@ -109,7 +110,17 @@ def _moq(archive: zipfile.ZipFile, info: zipfile.ZipInfo, products: dict[str, Pr
             continue
         multiple = _number(row[multiple_col]) if multiple_col < len(row) else None
         if multiple and multiple > 0:
-            products.setdefault(code, Product("", code, "", {})).moq = max(1, math.ceil(multiple))
+            product = products.setdefault(code, Product("", code, "", {}))
+            product.moq = max(1, math.ceil(multiple))
+            product.parameters.set(
+                "moq",
+                confirmed_parameter(
+                    product.moq,
+                    ParameterSource.PARTNER_EXPORT,
+                    "units",
+                    "Кратность из файла MOQ партнёра",
+                ),
+            )
         count += 1
     workbook.close()
     return count
