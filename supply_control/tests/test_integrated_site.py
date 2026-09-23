@@ -9,6 +9,7 @@ from scripts.build_integrated_site import _synthetic_payload
 
 
 PUBLIC_BUILDER_PATH = Path(__file__).resolve().parents[1] / "site/scripts/build_public_demo.py"
+TRACKED_SYNTHETIC_PATH = Path(__file__).resolve().parents[1] / "site/dist/data/synthetic.json"
 PUBLIC_BUILDER_SPEC = importlib.util.spec_from_file_location("public_demo_builder", PUBLIC_BUILDER_PATH)
 assert PUBLIC_BUILDER_SPEC and PUBLIC_BUILDER_SPEC.loader
 PUBLIC_BUILDER = importlib.util.module_from_spec(PUBLIC_BUILDER_SPEC)
@@ -25,6 +26,10 @@ class IntegratedSiteTests(unittest.TestCase):
         rows = self.payload["recommendations"]
         self.assertEqual(len(rows), 12)
         self.assertTrue(all(row["sku"].startswith("DEMO-") for row in rows))
+
+    def test_checked_in_synthetic_payload_matches_current_core(self) -> None:
+        checked_in = json.loads(TRACKED_SYNTHETIC_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(checked_in, self.payload)
 
     def test_all_required_scenarios_pass(self) -> None:
         proofs = self.payload["proofs"]
