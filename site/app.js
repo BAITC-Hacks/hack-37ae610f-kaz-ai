@@ -127,10 +127,13 @@ function renderSuppliers(suppliers) {
   $('supplierCards').innerHTML = suppliers.map((item) => {
     const hasApproved = item.approved_positions > 0;
     const href = `/api/export.csv?supplier=${encodeURIComponent(item.supplier)}`;
+    const exportControl = window.KazStatic
+      ? `<button type="button" data-supplier="${esc(item.supplier)}" class="supplier-export ${hasApproved ? '' : 'disabled'}" aria-disabled="${!hasApproved}">${esc(t('supplierCsv'))}</button>`
+      : `<a href="${esc(href)}" class="supplier-export ${hasApproved ? '' : 'disabled'}" aria-disabled="${!hasApproved}">${esc(t('supplierCsv'))}</a>`;
     return `<article class="supplier-card">
       <div class="supplier-card-name">${esc(displaySupplier(item.supplier))}</div>
       <div class="supplier-card-stats"><strong>${fmt.format(item.recommendations)}</strong><span>${esc(t('supplierRecommendations', { count: fmt.format(item.recommendations), word: positionWord(item.recommendations) }))}</span><strong>${fmt.format(item.approved_positions)}</strong><span>${esc(t('supplierApproved'))}</span></div>
-      <div class="supplier-card-actions"><button class="supplier-open" type="button" data-supplier="${esc(item.supplier)}">${esc(t('showItems'))}</button><a href="${esc(href)}" class="supplier-export ${hasApproved ? '' : 'disabled'}" aria-disabled="${!hasApproved}">${esc(t('supplierCsv'))}</a></div>
+      <div class="supplier-card-actions"><button class="supplier-open" type="button" data-supplier="${esc(item.supplier)}">${esc(t('showItems'))}</button>${exportControl}</div>
     </article>`;
   }).join('');
 }
@@ -223,11 +226,11 @@ async function init() {
 }
 
 if (page === 'suppliers') $('supplierCards').addEventListener('click', (event) => {
-  const link = event.target.closest('a.supplier-export');
-  if (link?.classList.contains('disabled')) event.preventDefault();
-  else if (link && window.KazStatic) {
+  const control = event.target.closest('.supplier-export');
+  if (control?.classList.contains('disabled')) event.preventDefault();
+  else if (control && window.KazStatic) {
     event.preventDefault();
-    try { window.KazStatic.exportCsv(new URL(link.href).searchParams.get('supplier')); }
+    try { window.KazStatic.exportCsv(control.dataset.supplier); }
     catch (error) { notify(error.message, true); }
   }
   const button = event.target.closest('button.supplier-open');
@@ -258,10 +261,14 @@ $('rows').addEventListener('change', (event) => {
   if (event.target.classList.contains('row-check')) {
     if (event.target.checked) state.selected.set(key(row), { supplier: row.supplier, code: row.code, quantity: Number(input.value) });
     else state.selected.delete(key(row));
-  } else if (event.target.classList.contains('qty-input') && state.selected.has(key(row))) {
-    state.selected.get(key(row)).quantity = Number(input.value);
   }
   updateSelection();
+});
+$('rows').addEventListener('input', (event) => {
+  if (!event.target.classList.contains('qty-input')) return;
+  const tr = event.target.closest('tr[data-key]');
+  const selected = state.selected.get(tr?.dataset.key);
+  if (selected) selected.quantity = Number(event.target.value);
 });
 $('rows').addEventListener('click', async (event) => {
   if (!event.target.classList.contains('save-stock')) return;
@@ -279,12 +286,20 @@ $('rows').addEventListener('click', async (event) => {
 });
 $('approve').addEventListener('click', async () => {
   try {
+    // Read the visible inputs at submission time as well; browser autofill and scripted edits
+    // can update a value without emitting the events used to keep selection state in sync.
+    $('rows').querySelectorAll('tr[data-key]').forEach((tr) => {
+      const selected = state.selected.get(tr.dataset.key);
+      if (selected && tr.querySelector('.row-check')?.checked) {
+        selected.quantity = Number(tr.querySelector('.qty-input')?.value);
+      }
+    });
     const result = await request('/api/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ days: state.days, items: [...state.selected.values()] }) });
     state.approvedCount = result.approved_count;
     state.selected.clear();
     renderMeta();
     await loadRows();
-    notify(t('approvedNotice', { count: fmt.format(result.approved), word: positionWord(result.approved) }));
+    notify(t('approvedNotice', { count: fmt.format(result.approved) }));
   } catch (error) { notify(error.message, true); }
 });
 $('exportLink').addEventListener('click', (event) => {

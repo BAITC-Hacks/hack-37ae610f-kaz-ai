@@ -71,16 +71,17 @@ class AppState:
         available = {(r["supplier"], r["code"]): r for r in self.rows(days)}
         prepared: list[tuple[str, dict]] = []
         seen: set[str] = set()
-        if not items or len(items) > 500:
+        if not isinstance(items, list) or not items or len(items) > 500:
             raise ValueError("Выберите от 1 до 500 позиций")
         for item in items:
+            if not isinstance(item, dict):
+                raise ValueError("Некорректная позиция заказа")
             supplier, code = str(item.get("supplier", "")), str(item.get("code", ""))
             row = available.get((supplier, code))
             if not row or row["status"] != "ready":
                 raise ValueError(f"Нет подтверждённого остатка для {code}")
-            try:
-                amount = int(item["quantity"])
-            except (ValueError, TypeError, KeyError):
+            amount = item.get("quantity")
+            if isinstance(amount, bool) or not isinstance(amount, int):
                 raise ValueError(f"Некорректное количество для {code}") from None
             if amount <= 0 or amount > 10_000_000 or amount % row["moq"] != 0:
                 raise ValueError(f"Количество {code} должно быть положительным и кратным {row['moq']}")
@@ -141,6 +142,8 @@ class AppState:
         product = self.by_key.get((supplier, code))
         if product is None:
             raise ValueError("Артикул не найден")
+        if isinstance(amount, bool):
+            raise ValueError("Некорректный остаток")
         try:
             number = float(amount)
         except (ValueError, TypeError):
@@ -294,11 +297,15 @@ class Handler(BaseHTTPRequestHandler):
             if size <= 0 or size > 100_000:
                 raise ValueError("Размер запроса превышен")
             body = json.loads(self.rfile.read(size))
+            if not isinstance(body, dict):
+                raise ValueError("Ожидается объект JSON")
             if path == "/api/stock":
                 self.state.set_stock(str(body.get("supplier", "")), str(body.get("code", "")), body.get("quantity"))
                 self._json({"saved": True, "approved_count": len(self.state.approved)})
                 return
-            days = int(body.get("days", 30))
+            days = body.get("days", 30)
+            if isinstance(days, bool) or not isinstance(days, int):
+                raise ValueError("Некорректный горизонт расчёта")
             ForecastSettings(self.state.as_of, days)
             count = self.state.approve(body.get("items", []), days)
             self._json({"approved": count, "approved_count": len(self.state.approved)})

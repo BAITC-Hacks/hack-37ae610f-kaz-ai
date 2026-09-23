@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import csv
 from pathlib import Path
 
 
@@ -23,6 +24,13 @@ def main() -> None:
         raise SystemExit("Public recommendations contain a non-demo product")
     if not data["sales"] or any(not sale["customer_id"].startswith("DEMO-") or not sale["code"].startswith("DEMO-") for sale in data["sales"]):
         raise SystemExit("Public sales contain a non-demo customer or product")
+    with (SITE / "synthetic_customer_sales.csv").open(encoding="utf-8-sig", newline="") as stream:
+        exported_sales = list(csv.DictReader(stream, delimiter=";"))
+    if len(exported_sales) != len(data["sales"]) or any(
+        not sale["ID клиента"].startswith("DEMO-") or not sale["Артикул"].startswith("DEMO-")
+        for sale in exported_sales
+    ):
+        raise SystemExit("Public sales CSV is incomplete or contains non-demo IDs")
     for page in ("index", "recommendations", "suppliers", "audit", "settings"):
         if not (SITE / f"{page}.html").is_file():
             raise SystemExit(f"Missing public page: {page}")

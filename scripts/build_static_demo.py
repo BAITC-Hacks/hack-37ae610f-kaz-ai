@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import shutil
+import sys
 from datetime import date
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
 from kaz_ai.demo import demo_products
 from kaz_ai.engine import ForecastSettings, recommend_all
-
-
-ROOT = Path(__file__).resolve().parent.parent
 
 
 def build(output: Path) -> None:
@@ -45,7 +47,20 @@ def build(output: Path) -> None:
         html = html.replace('src="/app.js"', 'src="./static_data.js"></script>\n  <script src="./static-api.js"></script>\n  <script src="./app.js"')
         html = html.replace("Локальный прототип · данные не отправляются поставщикам",
                             "Демоверсия · решения хранятся только в этом браузере")
+        if page == "index":
+            html = html.replace('href="/api/synthetic-sales.csv"',
+                                'href="./synthetic_customer_sales.csv" download="synthetic_customer_sales.csv"')
+        if page == "recommendations":
+            html = html.replace('<a id="exportLink" href="/api/export.csv"',
+                                '<button id="exportLink" type="button"')
+            html = html.replace('data-i18n="exportCsv">Экспорт CSV ↗</a>',
+                                'data-i18n="exportCsv">Экспорт CSV ↗</button>')
         (output / f"{page}.html").write_text(html, encoding="utf-8")
+    with (output / "synthetic_customer_sales.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.writer(stream, delimiter=";", lineterminator="\n")
+        writer.writerow(["Поставщик", "Артикул", "Месяц", "Документ", "ID клиента", "Количество"])
+        writer.writerows((sale["supplier"], sale["code"], sale["month"], sale["document"],
+                          sale["customer_id"], sale["quantity"]) for sale in payload["sales"])
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
     (output / "static_data.js").write_text("window.KAZ_STATIC_DATA = " + data + ";\n", encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")

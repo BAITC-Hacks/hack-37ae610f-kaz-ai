@@ -7,4 +7,5 @@ __pycache__/
 *.xlsx
 *.xls
 *.csv
+!site/synthetic_customer_sales.csv
 *.tsv
