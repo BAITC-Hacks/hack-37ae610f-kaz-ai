@@ -35,7 +35,7 @@ def main() -> None:
         report = {"mode": "synthetic", "as_of": args.as_of.isoformat(), "archives": ["Синтетический пример"],
                   "products": len(products), "ready_stock": sum(p.free_stock is not None for p in products),
                   "customers": len(customers), "transactions": sum(len(p.sales) for p in products),
-                  "dataset_id": f"synthetic-v2-{args.as_of.isoformat()}", "warnings": [], "files": []}
+                  "dataset_id": f"synthetic-v3-{args.as_of.isoformat()}", "warnings": [], "files": []}
     serve(products, report, args.port)
 
 

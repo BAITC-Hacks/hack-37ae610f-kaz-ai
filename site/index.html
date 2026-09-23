@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KAZ-AI — рекомендации для закупок</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="shell">
@@ -75,8 +75,10 @@
       <div class="action-bar" id="actionBar" hidden><div><span id="selectionCount">0 позиций выбрано</span><small>Количество должно быть кратно минимальной партии.</small></div><button id="approve" class="button button-primary" disabled>Утвердить выбранные <span>→</span></button></div>
       <div id="notice" class="notice" role="status" hidden></div>
     </main>
-    <footer><span>KAZ-AI · Прозрачные рекомендации для закупок</span><span>Локальный прототип · данные не отправляются поставщикам</span></footer>
+    <footer><span>KAZ-AI · Прозрачные рекомендации для закупок</span><span>Демоверсия · решения хранятся только в этом браузере</span></footer>
   </div>
-  <script src="/app.js" defer></script>
+  <script src="./static_data.js"></script>
+  <script src="./static-api.js"></script>
+  <script src="./app.js" defer></script>
 </body>
 </html>

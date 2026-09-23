@@ -87,6 +87,25 @@ class ReplenishmentAcceptanceTests(unittest.TestCase):
         self.assertGreater(corrected["imputed_stockouts"], 0)
         self.assertGreater(corrected["forecast"], raw["forecast"])
 
+    def test_lead_time_and_safety_stock_change_order(self):
+        base = run(product())
+        with_lead = run(product(lead_time_days=12))
+        with_safety = run(product(lead_time_days=12, safety_days=6))
+        self.assertGreater(with_lead["quantity"], base["quantity"])
+        self.assertGreater(with_safety["quantity"], with_lead["quantity"])
+        self.assertEqual(with_safety["target_days"], 48)
+        self.assertIn("страховой запас: 6 дн.", with_safety["reason"])
+        self.assertGreater(with_safety["forecast"], with_safety["coverage_forecast"])
+
+    def test_urgency_uses_demand_before_new_delivery(self):
+        exposed = run(product(free_stock=10, lead_time_days=12))
+        covered = run(product(free_stock=10, lead_time_days=12,
+                              inbound=[Arrival(date(2026, 10, 1), 40)]))
+        self.assertGreater(exposed["risk_before_delivery"], 0)
+        self.assertEqual(exposed["urgency"], "высокая")
+        self.assertEqual(covered["risk_before_delivery"], 0)
+        self.assertEqual(covered["urgency"], "обычная")
+
     def test_one_off_customer_order_does_not_inflate_regular_need(self):
         baseline = run(product())["quantity"]
         values = months()
@@ -133,6 +152,26 @@ class ReplenishmentAcceptanceTests(unittest.TestCase):
             self.assertEqual(len(AppState([product()], report, storage).approved), 1)
             app.set_stock(p.supplier, p.code, 20)
             self.assertEqual(len(app.approved), 0)
+
+    def test_supplier_exports_and_adjustments_have_audit_history(self):
+        a = product(moq=10)
+        b = product(supplier="Supplier B", code="SKU-2", moq=5)
+        report = {"as_of": AS_OF.isoformat(), "archives": ["test"], "products": 2}
+        with tempfile.TemporaryDirectory() as temp:
+            app = AppState([a, b], report, Path(temp) / "orders.json")
+            rows = {(row["supplier"], row["code"]): row for row in app.rows(30)}
+            app.approve([{"supplier": supplier, "code": code, "quantity": row["quantity"]}
+                         for (supplier, code), row in rows.items()], 30)
+            csv_a = app.export_csv("Supplier A").decode("utf-8-sig")
+            self.assertIn("SKU-1", csv_a)
+            self.assertNotIn("SKU-2", csv_a)
+            self.assertEqual(app.supplier_summary(30)[0]["approved_positions"], 1)
+            adjusted = rows[("Supplier A", "SKU-1")]["quantity"] + 10
+            app.approve([{"supplier": "Supplier A", "code": "SKU-1", "quantity": adjusted}], 30)
+            audit = app.audit_events()
+            self.assertEqual(len(audit), 3)
+            self.assertEqual(audit[0]["previous_quantity"], adjusted - 10)
+            self.assertEqual(audit[0]["approved_quantity"], adjusted)
 
 
 if __name__ == "__main__":
