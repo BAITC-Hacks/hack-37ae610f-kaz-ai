@@ -43,6 +43,16 @@
         <div class="stat"><span data-i18n="statReady">Подтверждённый остаток</span><strong id="statReady">—</strong><small data-i18n="statReadySub">можно утвердить</small></div>
         <div class="stat stat-attention"><span data-i18n="statMissing">Нужен остаток</span><strong id="statMissing">—</strong><small data-i18n="statMissingSub">заказ пока не рассчитан</small></div>
       </section>
+      <section id="analytics" class="analytics-section" aria-labelledby="analyticsTitle">
+        <div class="analytics-heading"><div><div class="section-kicker" data-i18n="analyticsKicker">КОНТРОЛЬ РАСЧЁТА</div><h2 id="analyticsTitle" data-i18n="analyticsTitle">Где нужно внимание закупщика</h2><p data-i18n="analyticsHelp">Сигналы рассчитаны по текущему горизонту покрытия на синтетических данных.</p></div><a href="./recommendations.html" data-i18n="analyticsOpen">Открыть рекомендации →</a></div>
+        <div class="analytics-grid">
+          <div class="analytics-card analytics-risk"><span data-i18n="analyticsRisk">Риск до поставки</span><strong id="analyticsRisk">—</strong><small data-i18n="analyticsRiskHelp">позиций с ожидаемым дефицитом</small></div>
+          <div class="analytics-card"><span data-i18n="analyticsOutliers">Разовый спрос исключён</span><strong id="analyticsOutliers">—</strong><small data-i18n="analyticsOutliersHelp">позиций с отдельными крупными заказами</small></div>
+          <div class="analytics-card"><span data-i18n="analyticsStockout">Спрос восстановлен</span><strong id="analyticsStockout">—</strong><small data-i18n="analyticsStockoutHelp">позиций с периодами дефицита</small></div>
+          <div class="analytics-card"><span data-i18n="analyticsStock">Остаток в расчёте</span><strong id="analyticsStock">—</strong><small data-i18n="analyticsStockHelp">позиций с известным свободным остатком</small></div>
+        </div>
+        <p class="analytics-note" data-i18n="analyticsNote">Эти показатели показывают работу алгоритма на вымышленных сценариях, а не качество прогноза на данных заказчика.</p>
+      </section>
       <section class="page-links" aria-label="Разделы" data-i18n-aria-label="mainNav">
         <a href="./recommendations.html"><span data-i18n="navRecommendations">Рекомендации</span><strong data-i18n="homeRecommendations">Проверить расчёт и утвердить заказ →</strong></a>
         <a href="./suppliers.html"><span data-i18n="navSuppliers">Поставщики</span><strong data-i18n="homeSuppliers">Посмотреть отдельные заказы →</strong></a>
