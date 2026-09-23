@@ -1,6 +1,7 @@
 const state = {
-  mode: new URLSearchParams(window.location.search).get("mode") || "synthetic",
+  mode: new URLSearchParams(window.location.search).get("mode") || document.body.dataset.defaultMode || "synthetic",
   publicOnly: document.body.dataset.publicDemo === "true",
+  publicExpanded: document.body.dataset.publicDemo === "expanded",
   payload: null,
   rows: [],
   filtered: [],
@@ -85,9 +86,13 @@ function renderSource() {
   elements["source-name"].textContent = summary.source_label || summary.scenario || "Расчёт";
   elements["source-date"].textContent = `Срез на ${new Date(`${summary.as_of}T12:00:00`).toLocaleDateString("ru-RU")}`;
   elements["source-count"].textContent = `${formatNumber.format(summary.source_skus || 0)} товарных позиций`;
-  elements["data-badge"].textContent = state.mode === "synthetic" ? "SAFE DEMO" : "PRIVATE";
+  elements["data-badge"].textContent = state.mode === "synthetic"
+    ? "SAFE DEMO"
+    : state.publicExpanded ? "PUBLIC DERIVED" : "PRIVATE";
   elements["data-badge"].classList.toggle("private", state.mode === "partner");
-  elements["warning-title"].textContent = state.mode === "synthetic" ? "Безопасная проверка требований" : "Демонстрационный расчёт на данных партнёра";
+  elements["warning-title"].textContent = state.mode === "synthetic"
+    ? "Безопасная проверка требований"
+    : state.publicExpanded ? "Расширенный публичный режим" : "Демонстрационный расчёт на данных партнёра";
   elements["warning-copy"].textContent = summary.warning || "Результат требует проверки менеджером.";
   elements["scenario-link"].textContent = state.mode === "synthetic" ? "Показать методику" : "Показать допущения";
 }
@@ -358,11 +363,11 @@ function registerWebMcpTools() {
   register({
     name: "switch_dataset_mode",
     title: "Переключить режим данных",
-    description: "Переключает безопасную проверку требований и приватные производные данные партнёра.",
+    description: "Переключает безопасную проверку требований и расширенные производные рекомендации.",
     inputSchema: { type: "object", properties: { mode: { enum: ["synthetic", "partner"] } }, required: ["mode"], additionalProperties: false },
     annotations: { readOnlyHint: false, untrustedContentHint: false },
     async execute(input) {
-      if (state.publicOnly && input.mode !== "synthetic") throw new Error("В публичной версии доступны только синтетические данные");
+      if (state.publicOnly && input.mode !== "synthetic") throw new Error("В этой версии доступны только синтетические данные");
       await switchMode(input.mode);
       return { mode: state.mode, rows: state.rows.length };
     },
@@ -421,8 +426,10 @@ async function init() {
   bindEvents();
   if (state.publicOnly) {
     state.mode = "synthetic";
-    elements["dataset-mode"].closest(".mode-control").hidden = true;
-    elements["file-input"].closest(".file-button").hidden = true;
+    elements["dataset-mode"].closest(".mode-control").style.display = "none";
+    elements["file-input"].closest(".file-button").style.display = "none";
+  } else if (state.publicExpanded) {
+    elements["file-input"].closest(".file-button").style.display = "none";
   }
   try {
     await switchMode(state.mode in dataSources ? state.mode : "synthetic");
