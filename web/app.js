@@ -1,4 +1,5 @@
 const $ = (id) => document.getElementById(id);
+const page = document.body.dataset.page;
 const state = { meta: null, rows: [], summary: null, suppliers: [], total: 0, offset: 0, limit: 100, selected: new Map(), days: 30, approvedCount: 0 };
 const languageKey = 'kaz-ai-language';
 let language = ['kk', 'ru'].includes(localStorage.getItem(languageKey)) ? localStorage.getItem(languageKey) : 'ru';
@@ -51,14 +52,18 @@ function localizedReason(row) {
 
 function applyLanguage() {
   document.documentElement.lang = language;
-  document.title = t('pageTitle');
+  document.title = `${t(({home:'navHome', recommendations:'navRecommendations', suppliers:'navSuppliers', audit:'navAudit', settings:'navSettings'})[page])} — KAZ-AI`;
+  document.querySelectorAll('[data-nav]').forEach((link) => {
+    if (link.dataset.nav === page) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
   fmt = new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 });
   document.querySelectorAll('[data-i18n]').forEach((node) => {
     node.textContent = t(node.dataset.i18n === 'footerRight' && window.KazStatic ? 'publicFooter' : node.dataset.i18n);
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-aria-label]').forEach((node) => { node.setAttribute('aria-label', t(node.dataset.i18nAriaLabel)); });
-  $('days').querySelectorAll('option').forEach((option) => { option.textContent = `${option.value} ${language === 'kk' ? 'күн' : 'дней'}`; });
+  $('days')?.querySelectorAll('option').forEach((option) => { option.textContent = `${option.value} ${language === 'kk' ? 'күн' : 'дней'}`; });
   document.querySelectorAll('[data-lang]').forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.lang === language));
     button.classList.toggle('active', button.dataset.lang === language);
@@ -85,25 +90,30 @@ async function request(url, options) {
 
 function renderMeta() {
   const meta = state.meta;
-  $('asOf').textContent = new Date(`${meta.as_of}T12:00:00`).toLocaleDateString(locale());
-  $('sourceMode').textContent = t(meta.mode === 'synthetic' ? 'synthetic' : 'partnerExports');
-  $('salesLink').hidden = meta.mode !== 'synthetic';
-  if (meta.mode === 'synthetic') $('salesLink').textContent = t('salesLink', { sales: fmt.format(meta.transactions), customers: fmt.format(meta.customers) });
-  const supplier = $('supplier').value;
-  const category = $('category').value;
-  $('supplier').innerHTML = `<option value="">${esc(t('allSuppliers'))}</option>` + meta.suppliers.map((name) => `<option value="${esc(name)}">${esc(displaySupplier(name))}</option>`).join('');
-  $('category').innerHTML = `<option value="">${esc(t('allCategories'))}</option>` + (meta.categories || []).map((name) => `<option value="${esc(name)}">${esc(displayCategory(name))}</option>`).join('');
-  $('supplier').value = supplier;
-  $('category').value = category;
-  $('approvedCount').textContent = fmt.format(state.approvedCount);
-  $('exportLink').classList.toggle('disabled', state.approvedCount === 0);
-  $('exportLink').setAttribute('aria-disabled', String(state.approvedCount === 0));
-  const warnings = meta.warnings || [];
-  $('warnings').hidden = warnings.length === 0;
-  $('warnings').innerHTML = warnings.length ? `<strong>${esc(t('warningsTitle'))}</strong><ul>${warnings.map((w) => `<li>${esc(displayFlag(w))}</li>`).join('')}</ul>` : '';
+  if ($('asOf')) $('asOf').textContent = new Date(`${meta.as_of}T12:00:00`).toLocaleDateString(locale());
+  if ($('sourceMode')) $('sourceMode').textContent = t(meta.mode === 'synthetic' ? 'synthetic' : 'partnerExports');
+  if ($('salesLink')) {
+    $('salesLink').hidden = meta.mode !== 'synthetic';
+    if (meta.mode === 'synthetic') $('salesLink').textContent = t('salesLink', { sales: fmt.format(meta.transactions), customers: fmt.format(meta.customers) });
+  }
+  if ($('supplier')) {
+    const supplier = $('supplier').value;
+    const category = $('category').value;
+    $('supplier').innerHTML = `<option value="">${esc(t('allSuppliers'))}</option>` + meta.suppliers.map((name) => `<option value="${esc(name)}">${esc(displaySupplier(name))}</option>`).join('');
+    $('category').innerHTML = `<option value="">${esc(t('allCategories'))}</option>` + (meta.categories || []).map((name) => `<option value="${esc(name)}">${esc(displayCategory(name))}</option>`).join('');
+    $('supplier').value = supplier;
+    $('category').value = category;
+    $('approvedCount').textContent = fmt.format(state.approvedCount);
+    $('exportLink').classList.toggle('disabled', state.approvedCount === 0);
+    $('exportLink').setAttribute('aria-disabled', String(state.approvedCount === 0));
+    const warnings = meta.warnings || [];
+    $('warnings').hidden = warnings.length === 0;
+    $('warnings').innerHTML = warnings.length ? `<strong>${esc(t('warningsTitle'))}</strong><ul>${warnings.map((w) => `<li>${esc(displayFlag(w))}</li>`).join('')}</ul>` : '';
+  }
 }
 
 function renderSummary(summary) {
+  if (!$('statProducts')) return;
   $('statProducts').textContent = fmt.format(summary.products);
   $('statOrders').textContent = fmt.format(summary.orders);
   $('statReady').textContent = fmt.format(summary.ready);
@@ -111,6 +121,7 @@ function renderSummary(summary) {
 }
 
 function renderSuppliers(suppliers) {
+  if (!$('supplierCards')) return;
   $('supplierCards').innerHTML = suppliers.map((item) => {
     const hasApproved = item.approved_positions > 0;
     const href = `/api/export.csv?supplier=${encodeURIComponent(item.supplier)}`;
@@ -124,7 +135,7 @@ function renderSuppliers(suppliers) {
 
 async function loadAudit() {
   const data = await request('/api/audit');
-  $('auditList').innerHTML = data.events.length ? data.events.slice(0, 10).map((event) => {
+  $('auditList').innerHTML = data.events.length ? data.events.slice(0, 30).map((event) => {
     const when = new Date(event.at).toLocaleString(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     const detail = event.event === 'approval'
       ? t('approvalDetail', { approved: fmt.format(event.approved_quantity), recommended: fmt.format(event.recommended_quantity) }) + (event.previous_quantity == null ? '' : t('previousQty', { previous: fmt.format(event.previous_quantity) }))
@@ -179,8 +190,6 @@ async function loadRows() {
   state.total = translatedSearch ? state.rows.length : data.total;
   state.summary = data.summary;
   state.suppliers = data.suppliers;
-  renderSummary(state.summary);
-  renderSuppliers(state.suppliers);
   renderRows();
 }
 
@@ -190,16 +199,27 @@ function clearAndLoad() {
   loadRows().catch((error) => notify(error.message, true));
 }
 
+async function loadOverview() {
+  const data = await request('/api/recommendations?days=30&orders=0&limit=1');
+  renderSummary(data.summary);
+  renderSuppliers(data.suppliers);
+}
+
 async function init() {
   applyLanguage();
+  if (page === 'settings') return;
   state.meta = await request('/api/meta');
   state.approvedCount = state.meta.approved_count;
   renderMeta();
-  await loadRows();
-  await loadAudit();
+  if (page === 'recommendations') {
+    const supplier = new URLSearchParams(location.search).get('supplier');
+    if (supplier && state.meta.suppliers.includes(supplier)) $('supplier').value = supplier;
+    await loadRows();
+  } else if (page === 'home' || page === 'suppliers') await loadOverview();
+  else if (page === 'audit') await loadAudit();
 }
 
-$('supplierCards').addEventListener('click', (event) => {
+if (page === 'suppliers') $('supplierCards').addEventListener('click', (event) => {
   const link = event.target.closest('a.supplier-export');
   if (link?.classList.contains('disabled')) event.preventDefault();
   else if (link && window.KazStatic) {
@@ -208,26 +228,16 @@ $('supplierCards').addEventListener('click', (event) => {
     catch (error) { notify(error.message, true); }
   }
   const button = event.target.closest('button.supplier-open');
-  if (!button) return;
-  $('supplier').value = button.dataset.supplier;
-  clearAndLoad();
-  $('supplier').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (button) location.href = `./recommendations.html?supplier=${encodeURIComponent(button.dataset.supplier)}`;
 });
 
-document.querySelectorAll('[data-lang]').forEach((button) => button.addEventListener('click', async () => {
-  const search = $('search').value.trim();
-  if (state.meta?.mode === 'synthetic' && search && !/^DEMO-/i.test(search)) {
-    $('search').value = state.rows.length === 1 ? state.rows[0].code : '';
-  }
+if (page === 'settings') document.querySelectorAll('[data-lang]').forEach((button) => button.addEventListener('click', () => {
   language = button.dataset.lang;
   localStorage.setItem(languageKey, language);
-  $('settings').open = false;
   applyLanguage();
-  if (!state.meta) return;
-  renderMeta();
-  try { await loadRows(); await loadAudit(); } catch (error) { notify(error.message, true); }
 }));
 
+if (page === 'recommendations') {
 $('supplier').addEventListener('change', clearAndLoad);
 $('category').addEventListener('change', clearAndLoad);
 $('days').addEventListener('change', () => { state.days = Number($('days').value); clearAndLoad(); });
@@ -261,7 +271,6 @@ $('rows').addEventListener('click', async (event) => {
     state.approvedCount = result.approved_count;
     renderMeta();
     await loadRows();
-    await loadAudit();
     notify(t('stockSaved'));
   } catch (error) { notify(error.message, true); }
 });
@@ -272,7 +281,6 @@ $('approve').addEventListener('click', async () => {
     state.selected.clear();
     renderMeta();
     await loadRows();
-    await loadAudit();
     notify(t('approvedNotice', { count: fmt.format(result.approved), word: positionWord(result.approved) }));
   } catch (error) { notify(error.message, true); }
 });
@@ -283,7 +291,8 @@ $('exportLink').addEventListener('click', (event) => {
     try { window.KazStatic.exportCsv(); } catch (error) { notify(error.message, true); }
   }
 });
-$('salesLink').addEventListener('click', (event) => {
+}
+if (page === 'home') $('salesLink').addEventListener('click', (event) => {
   if (!window.KazStatic) return;
   event.preventDefault();
   window.KazStatic.exportSales();

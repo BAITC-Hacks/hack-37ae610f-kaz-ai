@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KAZ-AI — рекомендации для закупок</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-page="settings">
+  <div class="shell">
+    <header class="site-header">
+      <div class="topbar">
+        <a class="brand" href="./" aria-label="KAZ-AI"><span class="brand-mark">K</span><span>KAZ-AI</span><span class="brand-sub" data-i18n="brandSub">/ закупки</span></a>
+        <div class="customer-brand"><span class="customer-label" data-i18n="forCustomer">Заказчик:</span><a href="https://nursultan.ekt.kz/" target="_blank" rel="noopener noreferrer" aria-label="ГК Электрокомплект — сайт заказчика" data-i18n-aria-label="customerSite"><small>ГРУППА КОМПАНИЙ</small><strong>ЭЛЕКТРОКОМПЛЕКТ</strong></a></div>
+      </div>
+      <nav class="main-nav" aria-label="Основная навигация" data-i18n-aria-label="mainNav">
+        <a href="./" data-nav="home" data-i18n="navHome">Обзор</a>
+        <a href="./recommendations.html" data-nav="recommendations" data-i18n="navRecommendations">Рекомендации</a>
+        <a href="./suppliers.html" data-nav="suppliers" data-i18n="navSuppliers">Поставщики</a>
+        <a href="./audit.html" data-nav="audit" data-i18n="navAudit">История</a>
+        <a href="./settings.html" data-nav="settings" data-i18n="navSettings">Настройки</a>
+      </nav>
+    </header>
+    <main>
+      <div class="page-heading"><div class="section-kicker" data-i18n="settingsKicker">ПАРАМЕТРЫ</div><h1 data-i18n="settings">Настройки</h1><p data-i18n="settingsHelp">Выберите язык интерфейса. Выбор сохранится в этом браузере.</p></div>
+      <section class="settings-page" aria-label="Настройки" data-i18n-aria-label="settings">
+        <h2 data-i18n="language">Язык интерфейса</h2>
+        <div class="language-options" role="group" aria-label="Язык" data-i18n-aria-label="language"><button type="button" data-lang="kk">Қазақша</button><button type="button" data-lang="ru">Русский</button></div>
+        <p data-i18n="settingsDataNote">Демонстрационные решения сохраняются только в этом браузере. Исходные коды и названия товаров в CSV не меняются при смене языка.</p>
+      </section>
+      <div id="notice" class="notice" role="status" hidden></div>
+    </main>
+    <footer><span data-i18n="footerLeft">KAZ-AI · Прозрачные рекомендации для закупок</span><span data-i18n="footerRight">Демоверсия · решения хранятся только в этом браузере</span></footer>
+  </div>
+  <script src="./i18n.js" defer></script>
+  <script src="./static_data.js"></script>
+  <script src="./static-api.js"></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
