@@ -188,8 +188,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path)
-        if path.path in ("/", "/app.js", "/style.css"):
-            filename = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css"}[path.path]
+        if path.path in ("/", "/app.js", "/i18n.js", "/style.css"):
+            filename = {"/": "index.html", "/app.js": "app.js", "/i18n.js": "i18n.js", "/style.css": "style.css"}[path.path]
             mime = "text/html; charset=utf-8" if filename.endswith(".html") else "text/javascript; charset=utf-8" if filename.endswith(".js") else "text/css; charset=utf-8"
             self._send((PUBLIC / filename).read_bytes(), mime)
             return

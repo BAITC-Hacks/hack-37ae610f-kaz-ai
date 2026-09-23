@@ -36,10 +36,11 @@ def build(output: Path) -> None:
                   for product in products for sale in product.sales],
     }
     output.mkdir(parents=True, exist_ok=True)
-    for name in ("style.css", "app.js", "static-api.js"):
+    for name in ("style.css", "i18n.js", "app.js", "static-api.js"):
         shutil.copyfile(ROOT / "web" / name, output / name)
     html = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
     html = html.replace('href="/style.css"', 'href="./style.css"')
+    html = html.replace('src="/i18n.js"', 'src="./i18n.js"')
     html = html.replace('src="/app.js"', 'src="./static_data.js"></script>\n  <script src="./static-api.js"></script>\n  <script src="./app.js"')
     html = html.replace("Локальный прототип · данные не отправляются поставщикам",
                         "Демоверсия · решения хранятся только в этом браузере")
