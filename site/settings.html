@@ -22,10 +22,17 @@
       </nav>
     </header>
     <main>
-      <div class="page-heading"><div class="section-kicker" data-i18n="settingsKicker">ПАРАМЕТРЫ</div><h1 data-i18n="settings">Настройки</h1><p data-i18n="settingsHelp">Выберите язык интерфейса. Выбор сохранится в этом браузере.</p></div>
+      <div class="page-heading"><div class="section-kicker" data-i18n="settingsKicker">ПАРАМЕТРЫ</div><h1 data-i18n="settings">Настройки</h1><p data-i18n="settingsHelp">Выберите язык и параметры списка рекомендаций. Выбор сохранится в этом браузере.</p></div>
       <section class="settings-page" aria-label="Настройки" data-i18n-aria-label="settings">
         <h2 data-i18n="language">Язык интерфейса</h2>
         <div class="language-options" role="group" aria-label="Язык" data-i18n-aria-label="language"><button type="button" data-lang="kk">Қазақша</button><button type="button" data-lang="ru">Русский</button></div>
+        <div class="settings-divider"></div>
+        <h2 data-i18n="recommendationDefaults">Рекомендации по умолчанию</h2>
+        <div class="settings-fields">
+          <label><span data-i18n="defaultCoverage">Горизонт покрытия</span><select id="defaultDays"><option value="14">14 дней</option><option value="30">30 дней</option><option value="45">45 дней</option><option value="60">60 дней</option></select></label>
+          <label><span data-i18n="defaultSupplier">Поставщик</span><select id="defaultSupplier"><option value="">Все поставщики</option></select></label>
+        </div>
+        <label class="settings-check"><input id="defaultOrdersOnly" type="checkbox"><span data-i18n="defaultOrdersOnly">Показывать только позиции к заказу</span></label>
         <p data-i18n="settingsDataNote">Демонстрационные решения сохраняются только в этом браузере. Исходные коды и названия товаров в CSV не меняются при смене языка.</p>
       </section>
       <div id="notice" class="notice" role="status" hidden></div>
