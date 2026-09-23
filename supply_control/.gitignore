@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+data/raw/
+data/extracted/
+site/.git/
+site/.sites-runtime/
